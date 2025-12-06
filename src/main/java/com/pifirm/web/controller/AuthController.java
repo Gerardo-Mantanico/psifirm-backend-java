@@ -48,6 +48,16 @@ public class AuthController {
         return ResponseEntity.ok(this.userService.add(userCreationDto));
     }
 
+    @io.swagger.v3.oas.annotations.parameters.RequestBody(
+        description = "Ejemplo de credenciales para login",
+        required = true,
+        content = @io.swagger.v3.oas.annotations.media.Content(
+            mediaType = "application/json",
+            examples = @io.swagger.v3.oas.annotations.media.ExampleObject(
+                value = "{\"email\": \"webbank404@gmail.com\", \"password\": \"P@ssword1\"}"
+            )
+        )
+    )
     @PostMapping("/login")
     public ResponseEntity<LoginResponseDto> login(@RequestBody @Valid LoginDto loginDto) {
         UserEntity authenticatedUser = authService.authenticate(loginDto);

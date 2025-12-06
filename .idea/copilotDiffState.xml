@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CopilotDiffPersistence">
+    <option name="pendingDiffs">
+      <map>
+        <entry key="$PROJECT_DIR$/src/main/java/com/pifirm/persistence/ServicioEntityRepository.java">
+          <value>
+            <PendingDiffInfo>
+              <option name="filePath" value="$PROJECT_DIR$/src/main/java/com/pifirm/persistence/ServicioEntityRepository.java" />
+              <option name="updatedContent" value="package com.pifirm.persistence;&#10;&#10;import com.pifirm.domain.repository.ServicioRepository;&#10;import com.pifirm.persistence.crud.CrudServicio;&#10;import com.pifirm.persistence.entity.ServicioEntity;&#10;import org.springframework.data.domain.Page;&#10;import org.springframework.data.domain.Pageable;&#10;import org.springframework.stereotype.Repository;&#10;&#10;import java.util.Optional;&#10;&#10;@Repository&#10;public class ServicioEntityRepository implements ServicioRepository {&#10;&#10;    private final CrudServicio crudServicio;&#10;&#10;    public ServicioEntityRepository(CrudServicio crudServicio) {&#10;        this.crudServicio = crudServicio;&#10;    }&#10;&#10;    @Override&#10;    public ServicioEntity save(ServicioEntity servicioEntity) {&#10;        return this.crudServicio.save(servicioEntity);&#10;    }&#10;&#10;    @Override&#10;    public Optional&lt;ServicioEntity&gt; findById(Long id) {&#10;        return this.crudServicio.findById(id);&#10;    }&#10;&#10;    @Override&#10;    public ServicioEntity update(ServicioEntity servicioEntity) {&#10;        return this.crudServicio.save(servicioEntity);&#10;    }&#10;&#10;    @Override&#10;    public void deleteById(Long id) {&#10;        this.crudServicio.deleteById(id);&#10;    }&#10;&#10;    @Override&#10;    public Page&lt;ServicioEntity&gt; findAll(Pageable pageable) {&#10;        return this.crudServicio.findAll(pageable);&#10;    }&#10;}&#10;" />
+            </PendingDiffInfo>
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+</project>
