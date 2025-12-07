@@ -1,0 +1,71 @@
+# Gradle build and cache
+.gradle/
+build/
+
+# Compiled Java classes and archives
+**/*.class
+**/*.jar
+**/*.war
+**/*.ear
+
+# IntelliJ IDEA
+/.idea/
+*.iml
+*.iws
+
+# Eclipse
+.classpath
+.project
+.settings/
+
+# VS Code
+.vscode/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs and temp files
+*.log
+tmp/
+temp/
+*.tmp
+
+# Test results and reports
+test-results/
+reports/
+
+# Generated/editor directories
+out/
+bin/
+
+# IDE-specific workspace files (don't track user-specific settings)
+.idea/**/workspace.xml
+.idea/**/tasks.xml
+.idea/**/usage.statistics.xml
+.idea/**/shelf/
+
+# Environment and secret files
+.env
+.env.local
+.secrets
+
+# Other
+*~
+*.swp
+
+# Ignore build artifacts produced by Gradle bootJar/bootWar
+build/libs/
+
+# Ignore IntelliJ run configs
+.idea/**/runConfigurations/
+
+# Keep the Gradle wrapper jar and properties committed (do not ignore)
+gradle-wrapper.jar
+gradle-wrapper.properties
+
+# Optional: coverage
+coverage/
+
+# Node modules if present
+node_modules/

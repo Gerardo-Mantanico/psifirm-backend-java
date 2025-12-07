@@ -5,11 +5,9 @@ import lombok.Getter;
 @Getter
 public enum Role {
     ADMIN(1L),
-    COMMERCES(2L),
-    DELIVERY(3L),
-    OPERATIONS_COORDINATOR(4L),
-    CUSTOMER(5L);
-
+    MANTENIMIENTO(2L),
+    CLIENTE(3L),
+    PSM(4L);
     private final Long id;
 
     private Role(Long id) {
