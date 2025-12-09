@@ -1,16 +1,13 @@
 package com.pifirm.domain.service;
 
-import com.pifirm.domain.dto.paciente.PacienteReqDto;
 import com.pifirm.domain.dto.user.UserCreationDto;
 import com.pifirm.domain.dto.user.UserDto;
 import com.pifirm.domain.dto.user.UserUpdateDto;
 import com.pifirm.domain.exception.GeneralException;
 import com.pifirm.domain.repository.*;
 import com.pifirm.persistence.entity.*;
-import com.pifirm.persistence.mapper.PacienteMapper;
 import com.pifirm.persistence.mapper.UserMapper;
 import jakarta.transaction.Transactional;
-import java.util.Objects;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -26,12 +23,10 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final RoleRepository roleRepository;
     private final UserMapper userMapper;
-    private final PacienteMapper pacienteMapper;
-    private final PacienteRepository pacienteRepository;
 
 
     @Transactional
-    public UserDto registerPaciente(PacienteReqDto userCreationDto) {
+    public UserDto registerPaciente(UserCreationDto userCreationDto) {
         // Hashear contraseña en el DTO para que el mapper la copie ya hasheada
         String hashedPassword = passwordEncoder.encode(userCreationDto.getPassword());
         userCreationDto.setPassword(hashedPassword);
@@ -39,16 +34,13 @@ public class UserService {
         Long roleId = userCreationDto.getRoleId();
         RoleEntity role = this.roleRepository.findById(roleId)
                 .orElseThrow(() -> new GeneralException("role-not-found", "Rol no encontrado"));
-        UserEntity userEntity = userMapper.toEntity(this.pacienteMapper.toUserEntity(userCreationDto));
+        UserEntity userEntity = userMapper.toEntity(userCreationDto);
         UserRoleEntity userRoleEntity = new UserRoleEntity();
         userRoleEntity.setUser(userEntity);
         userRoleEntity.setRole(role);
         userEntity.setUserRole(userRoleEntity);
         userEntity = userRepository.save(userEntity);
         userRoleEntity.setUser(userEntity);
-        var  paciente = this.pacienteMapper.toPacienteEntity(userCreationDto);
-        paciente.setUser(userEntity);
-        pacienteRepository.save(paciente);
         return this.userMapper.toDto(userEntity);
     }
 

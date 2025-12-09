@@ -2,6 +2,7 @@ package com.pifirm.persistence.mapper;
 
 import com.pifirm.domain.dto.horario.HorarioReqDto;
 import com.pifirm.domain.dto.ilempleado.ILEmpleadoReqDto;
+import com.pifirm.domain.dto.ilempleado.ILEmpleadoResDto;
 import com.pifirm.domain.dto.user.UserCreationDto;
 import com.pifirm.persistence.entity.HorarioEntity;
 import com.pifirm.persistence.entity.ILEmpleadoEntity;
@@ -14,6 +15,7 @@ import java.util.List;
 public interface PsmMapper {
 
     ILEmpleadoEntity toILEmpleadoEntity(ILEmpleadoReqDto ilempleadoReqDto);
+    ILEmpleadoResDto toILEmpleadoResDto(ILEmpleadoEntity ilempleadoEntity);
 
     HorarioEntity toHorarioEntity(HorarioReqDto horarioReqDto);
 

@@ -5,7 +5,6 @@ import com.pifirm.domain.dto.auth.RecoverPasswordDto;
 import com.pifirm.domain.dto.auth.VerifyCodeDto;
 import com.pifirm.domain.dto.login.LoginDto;
 import com.pifirm.domain.dto.login.LoginResponseDto;
-import com.pifirm.domain.dto.paciente.PacienteReqDto;
 import com.pifirm.domain.dto.user.UserCreationDto;
 import com.pifirm.domain.dto.user.UserDto;
 import com.pifirm.domain.enums.Role;
@@ -44,7 +43,7 @@ public class AuthController {
 
     @Operation(summary = "Registro de un cliente final", description = "Registra un nuevo usuario con rol de cliente final. No se requiere enviar el roleId, ya que por defecto será un cliente final.")
     @PostMapping("/signup")
-    public ResponseEntity<UserDto> signup(@RequestBody @Valid PacienteReqDto userCreationDto) {
+    public ResponseEntity<UserDto> signup(@RequestBody @Valid UserCreationDto userCreationDto) {
         userCreationDto.setRoleId(Role.CLIENTE.getId());
         return ResponseEntity.ok(this.userService.registerPaciente(userCreationDto));
     }

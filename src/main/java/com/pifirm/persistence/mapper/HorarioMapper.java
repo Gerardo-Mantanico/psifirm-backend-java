@@ -11,6 +11,6 @@ import java.util.List;
 public interface HorarioMapper {
 
     HorarioResDto ToDO (HorarioEntity entity);
-    List<HorarioResDto> listToDo (List<HorarioEntity> entity);
+    List<HorarioReqDto> listToDo (List<HorarioEntity> entity);
     HorarioEntity ToEntity(HorarioReqDto dto);
 }

@@ -1,23 +1,29 @@
 package com.pifirm.domain.dto.user;
 
 import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 
 public class UserCreationDto {
     @NotBlank
-    String firstname;
+    private String firstname;
+
     @NotBlank
-    String lastname;
+    private String lastname;
 
     @NotBlank
     @Email
-    String email;
+    private String email;
 
     @NotBlank
-    String phoneNumber;
+    @Min(value = 8, message = "El numero de telefono tiene que tener como minimo 8 digitos")
+    private String phoneNumber;
 
     @NotBlank
-    String password;
+    @Min(value=8, message = "La contraseña debe tener al menos 8 caracteres")
+    private String password;
+
 
     Long roleId;
 

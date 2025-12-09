@@ -31,9 +31,6 @@ public class HorarioService {
 
     }
 
-    public List<HorarioResDto> findAll(){
-        return this.horarioMapper.listToDo(this.horarioRepository.findAll());
-    }
 
     public void delete(Long id){
         this.horarioRepository.findById(id).ifPresent(this.horarioRepository::delete);
@@ -42,6 +39,11 @@ public class HorarioService {
     public void update(Long userId, HorarioReqDto horario){
       this.horarioRepository.existsByUser_Id(userId);
 
+    }
+
+    public List<HorarioReqDto> getByUserId(Long userId) {
+        List<HorarioEntity> horarios = this.horarioRepository.findByUser_Id(userId);
+        return this.horarioMapper.listToDo(horarios);
     }
 
 }
