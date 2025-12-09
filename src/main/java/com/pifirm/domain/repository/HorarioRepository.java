@@ -1,0 +1,8 @@
+package com.pifirm.domain.repository;
+
+import com.pifirm.persistence.entity.HorarioEntity;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface HorarioRepository extends JpaRepository<HorarioEntity, Long> {
+    void existsByUser_Id(Long userId);
+}

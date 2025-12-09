@@ -69,3 +69,21 @@ coverage/
 
 # Node modules if present
 node_modules/
+
+# Directorios de compilación y salida de Gradle
+/build/
+/out/
+
+# Archivos y carpetas temporales de Gradle
+.gradle/
+*.iml
+.idea/
+
+# Archivos de la historia de ejecución, hashes, etc.
+# Esto incluye muchos de los archivos .bin y .lock que se ven en la imagen.
+**/*.bin
+**/*.lock
+/build/reports/
+
+# Otros archivos generados que no deben subirse
+*/local.properties

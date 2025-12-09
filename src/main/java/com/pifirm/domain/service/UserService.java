@@ -66,14 +66,14 @@ public class UserService {
         ;
         if (userUpdateDto.phoneNumberNotEmpty())
             userEntity.setPhoneNumber(userUpdateDto.getPhoneNumber());
-//        if (userUpdateDto.getRoleId() != null) {
-//            RoleEntity role = this.roleRepository.findById(userUpdateDto.getRoleId())
-//                    .orElseThrow(() -> new GeneralException("role-not-found", "Rol no encontrado"));
-//            UserRoleEntity userRoleEntity = new UserRoleEntity();
-//            userRoleEntity.setUser(userEntity);
-//            userRoleEntity.setRole(role);
-//            userEntity.setUserRole(userRoleEntity);
-//        }
+        if (userUpdateDto.getRoleId() != null) {
+            RoleEntity role = this.roleRepository.findById(userUpdateDto.getRoleId())
+                    .orElseThrow(() -> new GeneralException("role-not-found", "Rol no encontrado"));
+            UserRoleEntity userRoleEntity = new UserRoleEntity();
+            userRoleEntity.setUser(userEntity);
+            userRoleEntity.setRole(role);
+            userEntity.setUserRole(userRoleEntity);
+        }
 
         if (userUpdateDto.getUse2fa() != null) {
             userEntity.setUse2fa(userUpdateDto.getUse2fa());

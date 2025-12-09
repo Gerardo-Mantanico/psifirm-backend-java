@@ -8,7 +8,7 @@ import java.math.BigDecimal;
 
 
 public record ServicioDto(
-         @UniqueValue( fieldName = "nombre",  entityClass = ServicioEntity.class, message = "Ya existe un servicio con este nombre")
+        // @UniqueValue( fieldName = "nombre",  entityClass = ServicioEntity.class, message = "Ya existe un servicio con este nombre")
          String nombre,
          String descripcion,
          BigDecimal precio

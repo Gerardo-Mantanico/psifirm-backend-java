@@ -23,6 +23,9 @@ public class ServicioService {
 
     @Transactional
     public ServicioResDto add(ServicioDto dto) {
+        servicioRepository.findByNombre(dto.nombre()).ifPresent(existing -> {
+            throw new GeneralException("servicio-exists", "Ya existe un servicio con este nombre");
+        });
         ServicioEntity entity = servicioMapper.toEntity(dto);
         ServicioEntity saved = servicioRepository.save(entity);
         return servicioMapper.toDto(saved);
@@ -33,7 +36,18 @@ public class ServicioService {
         ServicioEntity entity = servicioRepository.findById(id)
                 .orElseThrow(() -> new GeneralException("servicio-not-found", "Servicio no encontrado"));
 
-        if (dto.nombre() != null) entity.setNombre(dto.nombre());
+        if (dto.nombre() != null) {
+            servicioRepository.findByNombre(dto.nombre()).ifPresent(existingObj -> {
+                if (existingObj instanceof ServicioEntity) {
+                    ServicioEntity existing = (ServicioEntity) existingObj;
+                    if (!existing.getId().equals(id)) {
+                        throw new GeneralException("servicio-exists", "Ya existe un servicio con este nombre");
+                    }
+                }
+            });
+            entity.setNombre(dto.nombre());
+        }
+
         if (dto.descripcion() != null) entity.setDescripcion(dto.descripcion());
         if (dto.precio() != null) entity.setPrecio(dto.precio());
 

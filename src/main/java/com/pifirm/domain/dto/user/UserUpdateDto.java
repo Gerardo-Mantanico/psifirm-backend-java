@@ -8,14 +8,16 @@ public class UserUpdateDto {
     String password;
     Boolean use2fa;
     Boolean isActive;
+    Long roleId;
 
-    public UserUpdateDto(String firstname, String lastname, String phoneNumber, String password, Boolean use2fa, Boolean isActive) {
+    public UserUpdateDto(String firstname, String lastname, String phoneNumber, String password, Boolean use2fa, Boolean isActive, Long roleId) {
         this.firstname = firstname;
         this.lastname = lastname;
         this.phoneNumber = phoneNumber;
         this.password = password;
         this.use2fa = use2fa;
         this.isActive = isActive;
+        this.roleId = roleId;
     }
     public UserUpdateDto() {
     }
@@ -40,13 +42,13 @@ public class UserUpdateDto {
         return notNullOrEmpty(password);
     }
 
-//    public Long getRoleId() {
-//        return roleId;
-//    }
-//
-//    public void setRoleId(Long roleId) {
-//        this.roleId = roleId;
-//    }
+    public Long getRoleId() {
+        return roleId;
+    }
+
+    public void setRoleId(Long roleId) {
+        this.roleId = roleId;
+    }
 
     public Boolean getIsActive() {
         return isActive;

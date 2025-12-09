@@ -9,5 +9,6 @@ import java.util.Optional;
 
 public interface ServicioRepository  extends JpaRepository<ServicioEntity, Long> {
 
+    Optional<Object> findByNombre(String nombre);
 }
 
