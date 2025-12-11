@@ -3,6 +3,7 @@ package com.pifirm.domain.service;
 import com.pifirm.domain.dto.horario.HorarioReqDto;
 import com.pifirm.domain.dto.horario.HorarioResDto;
 import com.pifirm.domain.exception.GeneralException;
+import com.pifirm.domain.repository.ClinicaRepository;
 import com.pifirm.domain.repository.HorarioRepository;
 import com.pifirm.domain.repository.UserRepository;
 import com.pifirm.persistence.entity.HorarioEntity;
@@ -18,6 +19,7 @@ import java.util.List;
 public class HorarioService {
     private final HorarioRepository horarioRepository;
     private final HorarioMapper horarioMapper;
+    private final ClinicaService clinicaService;
 
     public void save(List<HorarioEntity> LIstHorario, UserEntity user){
 
@@ -25,6 +27,12 @@ public class HorarioService {
             horario.setUser(user);
             if(horario.getHoraInicio().isAfter(horario.getHoraFin())){
                 throw new GeneralException("error-hora","La hora de inicio no puede ser posterior a la hora de fin");
+            }
+            else if(horario.getHoraInicio().isAfter(clinicaService.getById().getHorasAtencion())){
+                throw new GeneralException("error-hora","La hora de inicio no puede ser posterior a la hora de atencion de la clinica");
+            }
+            else  if (horario.getHoraFin().isAfter(clinicaService.getById().getHoraCierre())){
+                throw new GeneralException("error-hora","La hora de fin no puede ser posterior a la hora de cierre de la clinica");
             }
             this.horarioRepository.save(horario);
         }

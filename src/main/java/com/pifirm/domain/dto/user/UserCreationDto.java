@@ -21,7 +21,6 @@ public class UserCreationDto {
     private String phoneNumber;
 
     @NotBlank
-    @Min(value=8, message = "La contraseña debe tener al menos 8 caracteres")
     private String password;
 
 

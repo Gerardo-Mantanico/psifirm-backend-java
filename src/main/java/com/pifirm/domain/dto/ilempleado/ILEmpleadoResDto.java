@@ -9,8 +9,6 @@ import java.math.BigDecimal;
 public record ILEmpleadoResDto(
         EspecialidadResDto especialidad,
         String colegiado,
-        AreaResDto area,
-        String tipoContrato,
-        BigDecimal tarifa
+        AreaResDto area
 ) {
 }

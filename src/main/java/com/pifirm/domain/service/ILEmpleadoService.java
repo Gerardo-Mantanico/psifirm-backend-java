@@ -33,9 +33,6 @@ public class ILEmpleadoService {
         this.especialidadService.getById(dto.especialidadId());
 
         existingEntity.setColegiado(dto.colegiado());
-        existingEntity.setTipoContrato(dto.tipoContrato());
-        existingEntity.setTarifa(dto.tarifa());
-
         this.ilempleadoRepository.save(existingEntity);
     }
 

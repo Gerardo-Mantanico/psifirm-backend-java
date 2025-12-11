@@ -5,9 +5,7 @@ import java.math.BigDecimal;
 public record ILEmpleadoReqDto(
         Long especialidadId,
         String colegiado,
-        Long areaId,
-        String tipoContrato,
-        BigDecimal tarifa
+        Long areaId
 ) {
 }
 

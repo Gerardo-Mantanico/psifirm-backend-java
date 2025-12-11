@@ -6,6 +6,7 @@ import com.pifirm.persistence.entity.AreaEntity;
 import com.pifirm.persistence.entity.EspecialidadEntity;
 import com.pifirm.persistence.entity.UserEntity;
 import com.pifirm.persistence.mapper.PsmMapper;
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +19,7 @@ public class PsmServicie {
     private final PsmMapper psmMapper;
     private final UserUtilsService userUtilsService;
 
+    @Transactional
     public  void registerPsm(PsmReqDto psmDto, Long userId  ) {
          this.userService.getById(userId);
 
@@ -42,6 +44,7 @@ public class PsmServicie {
 
     }
 
+    @Transactional
     public void updatePsm(PsmReqDto psmDto, Long userId) {
         this.userService.getById(userId);
 

@@ -35,13 +35,5 @@ public class ILEmpleadoEntity {
     @JoinColumn(name = "area_id", nullable = false)
     private AreaEntity area;
 
-    @NotNull
-    @Column(name = "tipo_contrato", length = 20, nullable = false)
-    private String tipoContrato; // valores esperados por la DB: 'mensual','sesion','mixto'
-
-    @NotNull
-    @Column(name = "tarifa", precision = 10, scale = 2, nullable = false)
-    private BigDecimal tarifa;
-
 }
 

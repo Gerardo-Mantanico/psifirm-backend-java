@@ -33,11 +33,16 @@ public class CitaService {
 
         UserEntity paciente = userRepository.findById(userUtilsService.getCurrent().getId())
                 .orElseThrow(() -> new GeneralException("paciente-not-found", "Paciente no encontrado"));
-        UserEntity medico = null;
 
-        ServicioEntity servicio = servicioRepository.findById(1L)
+        ServicioEntity servicio = servicioRepository.findById(dto.servicioMedicoId())
                 .orElseThrow(() -> new GeneralException("servicio-not-found", "Servicio no encontrado"));
         entity.setPaciente(paciente);
+
+
+
+
+
+        UserEntity medico = null;
         entity.setMedico(medico);
         entity.setServicioMedico(servicio);
 

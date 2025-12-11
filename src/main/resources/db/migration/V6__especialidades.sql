@@ -17,11 +17,9 @@ INSERT INTO especialidades (nombre, descripcion, updated_at) VALUES
 CREATE  TABLE informacion_laboral_empleados (
     id SERIAL PRIMARY KEY,
     especialidad_id INT NOT NULL REFERENCES especialidades(id) ON DELETE CASCADE,
-    user_id INT NOT NULL REFERENCES public.user(id) ON DELETE CASCADE,
+    user_id INT NOT NULL REFERENCES public.user(id) ON DELETE CASCADE UNIQUE ,
     colegiado VARCHAR(100),
-    area_id INT NOT NULL REFERENCES area(id) ON DELETE CASCADE,
-    tipo_contrato VARCHAR(20) CHECK (tipo_contrato IN ('mensual', 'sesion', 'mixto')) NOT NULL,
-    tarifa NUMERIC(10,2) NOT NULL  -- puede ser por mes, hora o sesión
+    area_id INT NOT NULL REFERENCES area(id) ON DELETE CASCADE
 );
 
 
