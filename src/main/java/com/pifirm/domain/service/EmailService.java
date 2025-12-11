@@ -10,6 +10,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.concurrent.CompletableFuture;
 
+import jakarta.mail.internet.MimeMessage;
+import org.springframework.mail.javamail.MimeMessageHelper;
+
 @Service
 public class EmailService {
 
@@ -20,7 +23,7 @@ public class EmailService {
         this.mailSender = mailSender;
     }
 
-    // Synchronous method
+    // Synchronous method (plain text)
     public void sendEmail(String to, String subject, String body) {
         try {
             SimpleMailMessage message = createMessage(to, subject, body);
@@ -32,7 +35,7 @@ public class EmailService {
         }
     }
 
-    // Asynchronous method
+    // Asynchronous method (plain text)
     @Async
     public CompletableFuture<Void> sendEmailAsync(String to, String subject, String body) {
         try {
@@ -55,4 +58,44 @@ public class EmailService {
         message.setText(body);
         return message;
     }
+
+    // --- New: HTML support using MimeMessageHelper ---
+
+    // Synchronous HTML send
+    public void sendHtmlEmail(String to, String subject, String htmlBody) {
+        try {
+            MimeMessage mimeMessage = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, "utf-8");
+            helper.setFrom("webbank404@gmail.com");
+            helper.setTo(to);
+            helper.setSubject(subject);
+            helper.setText(htmlBody, true); // true = isHtml
+            log.info("Sending HTML email synchronously...");
+            mailSender.send(mimeMessage);
+            log.info("HTML email sent synchronously");
+        } catch (Exception ex) {
+            log.error("Error sending HTML email synchronously: {}", ex.getMessage(), ex);
+        }
+    }
+
+    // Asynchronous HTML send
+    @Async
+    public CompletableFuture<Void> sendHtmlEmailAsync(String to, String subject, String htmlBody) {
+        try {
+            MimeMessage mimeMessage = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, "utf-8");
+            helper.setFrom("webbank404@gmail.com");
+            helper.setTo(to);
+            helper.setSubject(subject);
+            helper.setText(htmlBody, true); // true = isHtml
+            log.info("Sending HTML email asynchronously...");
+            mailSender.send(mimeMessage);
+            log.info("HTML email sent asynchronously");
+            return CompletableFuture.completedFuture(null);
+        } catch (Exception ex) {
+            log.error("Error sending HTML email asynchronously: {}", ex.getMessage(), ex);
+            return CompletableFuture.failedFuture(ex);
+        }
+    }
+
 }

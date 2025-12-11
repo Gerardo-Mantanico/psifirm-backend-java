@@ -46,7 +46,9 @@ bin/
 .idea/**/shelf/
 
 # Environment and secret files
-.env
+src/main/resources/.env
+src/main/resources/app.env
+app.env
 .env.local
 .secrets
 
