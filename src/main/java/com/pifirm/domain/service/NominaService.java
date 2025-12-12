@@ -33,7 +33,7 @@ public class NominaService {
 
     @Transactional
     public List<NominaDTO> list() {
-        return this.nominaMapper.toDtos(nominaRepository.findAll());
+        return this.nominaMapper.toDtos(nominaRepository.findAllWithRelations());
     }
 
     @Transactional
@@ -94,7 +94,15 @@ public class NominaService {
         this.nominaBonoRepository.findByTipoBono_Id(bonoDto.tipoId()).ifPresent(b -> {
             throw new GeneralException("error", "El bono de este tipo ya ha sido agregado a la nómina.");
         });
-        return  nominaMapper.toDetalleDto(nominaBonoRepository.save(this.nominaMapper.toBonoEntity(bonoDto)));
+        NominaBonoEntity nominaBonoEntity = new NominaBonoEntity();
+        nominaBonoEntity.setMonto(bonoDto.monto());
+        nominaBonoEntity.setNomina(getById(nominaId));
+
+        TipoBonoEntity tipoBono = new TipoBonoEntity();
+        tipoBono.setId(bonoDto.tipoId());
+
+        nominaBonoEntity.setTipoBono(tipoBono);
+        return  nominaMapper.toDetalleDto(nominaBonoRepository.save(nominaBonoEntity));
     }
 
     @Transactional
@@ -102,7 +110,17 @@ public class NominaService {
         this.nominaRetencionRepository.findByTipoRetencion_Id(retDto.tipoId()).ifPresent(b -> {
             throw new GeneralException("error", "El bono de este tipo ya ha sido agregado a la nómina.");
         });
-        return nominaMapper.toDetalleDto( nominaRetencionRepository.save(this.nominaMapper.toRetencionEntity(retDto)));
+
+        NominaRetencionEntity nominaRetencionEntity = new NominaRetencionEntity();
+        nominaRetencionEntity.setMonto(retDto.monto());
+        nominaRetencionEntity.setNomina(getById(nominaId));
+
+        TipoRetencionEntity tipoRetencion = new TipoRetencionEntity();
+        tipoRetencion.setId(retDto.tipoId());
+
+        nominaRetencionEntity.setTipoRetencion(tipoRetencion);
+
+        return nominaMapper.toDetalleDto( nominaRetencionRepository.save(nominaRetencionEntity));
     }
 
     @Transactional
@@ -110,7 +128,16 @@ public class NominaService {
         this.nominaDescuentoRepository.findByTipoDescuento_Id(desDto.tipoId()).ifPresent(b -> {
             throw new GeneralException("error", "El bono de este tipo ya ha sido agregado a la nómina.");
         });
-        return nominaMapper.toDetalleDto( nominaDescuentoRepository.save(this.nominaMapper.toDescuentoEntity(desDto)));
+
+        NominaDescuentoEntity nominaDescuentoEntity = new NominaDescuentoEntity();
+        nominaDescuentoEntity.setMonto(desDto.monto());
+        nominaDescuentoEntity.setNomina(getById(nominaId));
+
+        TipoDescuentoEntity tipoDescuento = new TipoDescuentoEntity();
+        tipoDescuento.setId(desDto.tipoId());
+
+        nominaDescuentoEntity.setTipoDescuento(tipoDescuento);
+        return nominaMapper.toDetalleDto( nominaDescuentoRepository.save(nominaDescuentoEntity));
     }
 
     @Transactional
@@ -128,4 +155,8 @@ public class NominaService {
         nominaDescuentoRepository.deleteById(id);
     }
 
+    public NominaEntity getById(Long id) {
+        return nominaRepository.findById(id)
+                .orElseThrow(() -> new GeneralException("error", "Nómina no encontrada."));
+    }
 }
