@@ -13,13 +13,13 @@ import java.util.List;
 @Mapper(componentModel = "spring", uses = {ServicioMapper.class})
 public interface AreaMapper {
     AreaResDto toDto(AreaEntity entity);
-
+    
     @Mapping(target = "servicio", ignore = true)
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
     AreaEntity toEntity(AreaDto dto);
-
+    
     List<AreaResDto> toDto(Iterable<AreaEntity> entities);
 }
 

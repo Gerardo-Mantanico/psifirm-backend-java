@@ -25,12 +25,12 @@ public class AreaService {
     @Transactional
     public AreaResDto add(AreaDto dto) {
         AreaEntity entity = areaMapper.toEntity(dto);
-
+        
         // Establecer la relación con el servicio
         ServicioEntity servicio = servicioRepository.findById(dto.servicioId())
                 .orElseThrow(() -> new GeneralException("servicio-not-found", "Servicio no encontrado"));
         entity.setServicio(servicio);
-
+        
         AreaEntity saved = areaRepository.save(entity);
         return areaMapper.toDto(saved);
     }
@@ -42,7 +42,7 @@ public class AreaService {
 
         if (dto.nombre() != null) entity.setNombre(dto.nombre());
         if (dto.descripcion() != null) entity.setDescripcion(dto.descripcion());
-
+        
         // Actualizar la relación con el servicio si se proporciona
         if (dto.servicioId() != null) {
             ServicioEntity servicio = servicioRepository.findById(dto.servicioId())
