@@ -114,11 +114,9 @@ CREATE TABLE comprobantes (
 );
 
 
-
-
--- Función que calcula Salario Bruto y Neto basado en la base y los detalles
-CREATE OR REPLACE FUNCTION calcular_salarios_nomina(nomina_id_param INT)
-RETURNS VOID AS
+-- Ahora crear la nueva función y triggers
+CREATE OR REPLACE FUNCTION actualizar_salario_nomina(nomina_id_param INT)
+    RETURNS VOID AS
 $$
 DECLARE
 v_salario_base NUMERIC(10, 2);
@@ -129,119 +127,88 @@ v_salario_base NUMERIC(10, 2);
     v_salario_neto NUMERIC(10, 2);
 BEGIN
     -- 1. Obtener la base de la nómina
-SELECT salario_base
-INTO v_salario_base
-FROM nominas
-WHERE id = nomina_id_param;
+SELECT salario_base INTO v_salario_base
+FROM nominas WHERE id = nomina_id_param;
 
 -- 2. Sumar Bonos (Ingresos)
-SELECT COALESCE(SUM(monto), 0)
-INTO v_total_bonos
-FROM nomina_bonos
-WHERE nomina_id = nomina_id_param;
+SELECT COALESCE(SUM(monto), 0) INTO v_total_bonos
+FROM nomina_bonos WHERE nomina_id = nomina_id_param;
 
--- Cálculo Salario Bruto (Base + Bonos)
-v_salario_bruto := v_salario_base + v_total_bonos;
-
-    -- 3. Sumar Retenciones (Egresos obligatorios)
-SELECT COALESCE(SUM(monto), 0)
-INTO v_total_retenciones
-FROM nomina_retenciones
-WHERE nomina_id = nomina_id_param;
+-- 3. Sumar Retenciones (Egresos obligatorios)
+SELECT COALESCE(SUM(monto), 0) INTO v_total_retenciones
+FROM nomina_retenciones WHERE nomina_id = nomina_id_param;
 
 -- 4. Sumar Descuentos (Egresos especiales)
-SELECT COALESCE(SUM(monto), 0)
-INTO v_total_descuentos
-FROM nomina_descuentos
-WHERE nomina_id = nomina_id_param;
+SELECT COALESCE(SUM(monto), 0) INTO v_total_descuentos
+FROM nomina_descuentos WHERE nomina_id = nomina_id_param;
 
--- 5. Calcular Salario Neto Adeudado (Bruto - Retenciones - Descuentos)
-v_salario_neto := v_salario_bruto - v_total_retenciones - v_total_descuentos;
+-- 5. Calcular Salario Bruto y Neto
+v_salario_bruto := v_salario_base + v_total_bonos;
+    v_salario_neto := v_salario_bruto - v_total_retenciones - v_total_descuentos;
 
-    -- 6. Actualizar la tabla nominas
+    -- 6. Actualizar
 UPDATE nominas
 SET
     salario_bruto = v_salario_bruto,
     salario_neto_adeudado = v_salario_neto
 WHERE id = nomina_id_param;
-
 END;
 $$
 LANGUAGE plpgsql;
 
-
-
--- 1. Trigger principal: Ejecuta el cálculo al crear/actualizar una nómina
-CREATE OR REPLACE FUNCTION trigger_nominas_calcular()
-RETURNS TRIGGER AS
+-- Trigger único para INSERT en nominas
+CREATE OR REPLACE FUNCTION trigger_nominas_insert()
+    RETURNS TRIGGER AS
 $$
 BEGIN
-    PERFORM calcular_salarios_nomina(NEW.id);
+    -- Para nueva nómina, calcular valores iniciales
+    NEW.salario_bruto := NEW.salario_base;
+    NEW.salario_neto_adeudado := NEW.salario_base;
 RETURN NEW;
 END;
 $$
 LANGUAGE plpgsql;
 
-CREATE TRIGGER nominas_after_insert_update
-    AFTER INSERT OR UPDATE ON nominas
-                        FOR EACH ROW
-                        EXECUTE FUNCTION trigger_nominas_calcular();
+-- Trigger BEFORE para establecer valores iniciales
+CREATE TRIGGER nominas_before_insert
+    BEFORE INSERT ON nominas
+    FOR EACH ROW
+    EXECUTE FUNCTION trigger_nominas_insert();
 
-
--- 2. Trigger para Bonos: Recalcula al modificar los ingresos
-CREATE OR REPLACE FUNCTION trigger_bonos_calcular()
-RETURNS TRIGGER AS
+-- Función única para tablas relacionadas
+CREATE OR REPLACE FUNCTION trigger_calcular_salario()
+    RETURNS TRIGGER AS
 $$
+DECLARE
+v_nomina_id INT;
 BEGIN
-    IF TG_OP = 'INSERT' OR TG_OP = 'UPDATE' THEN
-        PERFORM calcular_salarios_nomina(NEW.nomina_id);
-    ELSIF TG_OP = 'DELETE' THEN
-        PERFORM calcular_salarios_nomina(OLD.nomina_id);
+    -- Determinar el ID de la nómina afectada
+    IF TG_OP = 'DELETE' THEN
+        v_nomina_id := OLD.nomina_id;
+ELSE
+        v_nomina_id := NEW.nomina_id;
 END IF;
+
+    -- Llamar a la función de actualización
+    PERFORM actualizar_salario_nomina(v_nomina_id);
+
 RETURN NULL;
 END;
 $$
 LANGUAGE plpgsql;
 
+-- Triggers simplificados
 CREATE TRIGGER bonos_after_changes
     AFTER INSERT OR UPDATE OR DELETE ON nomina_bonos
     FOR EACH ROW
-    EXECUTE FUNCTION trigger_bonos_calcular();
-
-
--- 3. Trigger para Retenciones: Recalcula al modificar las retenciones
-CREATE OR REPLACE FUNCTION trigger_retenciones_calcular()
-RETURNS TRIGGER AS $$
-BEGIN
-    IF TG_OP = 'INSERT' OR TG_OP = 'UPDATE' THEN
-        PERFORM calcular_salarios_nomina(NEW.nomina_id);
-    ELSIF TG_OP = 'DELETE' THEN
-        PERFORM calcular_salarios_nomina(OLD.nomina_id);
-END IF;
-RETURN NULL;
-END;
-$$ LANGUAGE plpgsql;
+    EXECUTE FUNCTION trigger_calcular_salario();
 
 CREATE TRIGGER retenciones_after_changes
     AFTER INSERT OR UPDATE OR DELETE ON nomina_retenciones
     FOR EACH ROW
-    EXECUTE FUNCTION trigger_retenciones_calcular();
-
-
--- 4. Trigger para Descuentos: Recalcula al modificar los descuentos
-CREATE OR REPLACE FUNCTION trigger_descuentos_calcular()
-RETURNS TRIGGER AS $$
-BEGIN
-    IF TG_OP = 'INSERT' OR TG_OP = 'UPDATE' THEN
-        PERFORM calcular_salarios_nomina(NEW.nomina_id);
-    ELSIF TG_OP = 'DELETE' THEN
-        PERFORM calcular_salarios_nomina(OLD.nomina_id);
-END IF;
-RETURN NULL;
-END;
-$$ LANGUAGE plpgsql;
+    EXECUTE FUNCTION trigger_calcular_salario();
 
 CREATE TRIGGER descuentos_after_changes
     AFTER INSERT OR UPDATE OR DELETE ON nomina_descuentos
     FOR EACH ROW
-    EXECUTE FUNCTION trigger_descuentos_calcular();
+    EXECUTE FUNCTION trigger_calcular_salario();
