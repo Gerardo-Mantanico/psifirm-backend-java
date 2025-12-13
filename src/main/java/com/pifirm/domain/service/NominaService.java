@@ -29,15 +29,15 @@ public class NominaService {
     private final TipoRetencionRepository tipoRetencionRepository;
     private final TipoDescuentoRepository tipoDescuentoRepository;
     private final NominaMapper nominaMapper;
-    private final UserService userRepository;
 
     @Transactional
     public List<NominaDTO> list() {
-        return this.nominaMapper.toDtos(nominaRepository.findAllWithRelations());
+
+        return this.nominaMapper.toDtos(nominaRepository.findAll());
     }
 
     @Transactional
-    public NominaEntity create(NominaSimpleDTO dto) {
+    public NominaDTO create(NominaSimpleDTO dto) {
         userService.getById(dto.userId());
         this.nominaRepository.findByUser_Id(dto.userId()).ifPresent(n -> {
             throw new GeneralException("error", "El usuario ya tiene una nómina asignada.");
@@ -47,11 +47,12 @@ public class NominaService {
         var usuer = new UserEntity();
         usuer.setId(dto.userId());
         nominaEntity.setUser(usuer);
-        return nominaRepository.save(nominaEntity);
+        NominaEntity saved = nominaRepository.save(nominaEntity);
+        return nominaMapper.toDto(saved);
     }
 
   @Transactional
-  public NominaEntity update(Long id, NominaSimpleDTO payload) {
+  public NominaDTO update(Long id, NominaSimpleDTO payload) {
       NominaEntity existing = nominaRepository.findById(id)
           .orElseThrow(() -> new GeneralException("error", "Nómina no encontrada."));
 
@@ -77,7 +78,8 @@ public class NominaService {
           existing.setMetodoPago(null);
       }
 
-      return nominaRepository.save(existing);
+      NominaEntity saved = nominaRepository.save(existing);
+      return nominaMapper.toDto(saved);
   }
 
     @Transactional

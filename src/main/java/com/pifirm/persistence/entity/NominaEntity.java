@@ -1,7 +1,10 @@
 package com.pifirm.persistence.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -11,9 +14,11 @@ import java.util.Set;
 @Entity
 @Table(name = "nominas")
 @Data
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class NominaEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @EqualsAndHashCode.Include
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -46,12 +51,20 @@ public class NominaEntity {
     private LocalDate fechaCierre;
 
     @OneToMany(mappedBy = "nomina", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference("nomina-bonos")
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private Set<NominaBonoEntity> bonos = new LinkedHashSet<>();
 
     @OneToMany(mappedBy = "nomina", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference("nomina-retenciones")
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private Set<NominaRetencionEntity> retenciones = new LinkedHashSet<>();
 
     @OneToMany(mappedBy = "nomina", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference("nomina-descuentos")
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private Set<NominaDescuentoEntity> descuentos = new LinkedHashSet<>();
 }
-

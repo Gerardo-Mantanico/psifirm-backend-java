@@ -1,5 +1,6 @@
 package com.pifirm.persistence.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -15,6 +16,7 @@ public class NominaRetencionEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "nomina_id", nullable = false)
+    @JsonBackReference("nomina-retenciones")
     private NominaEntity nomina;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -24,4 +26,3 @@ public class NominaRetencionEntity {
     @Column(name = "monto", nullable = false)
     private BigDecimal monto;
 }
-

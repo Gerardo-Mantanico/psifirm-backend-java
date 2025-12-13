@@ -5,7 +5,6 @@ import com.pifirm.domain.dto.nomina.NominaDetalleDTO;
 import com.pifirm.domain.dto.nomina.NominaDetalleReqDTO;
 import com.pifirm.domain.dto.nomina.NominaSimpleDTO;
 import com.pifirm.domain.service.NominaService;
-import com.pifirm.persistence.entity.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,7 +20,7 @@ public class NominaController {
     // CRUD Nomina
 
     @PostMapping
-    public ResponseEntity<NominaEntity> create(@RequestBody NominaSimpleDTO payload) {
+    public ResponseEntity<NominaDTO> create(@RequestBody NominaSimpleDTO payload) {
         return ResponseEntity.ok(nominaService.create(payload));
     }
 
@@ -33,7 +32,7 @@ public class NominaController {
 
 
     @PutMapping("/{id}")
-    public NominaEntity update(@PathVariable Long id, @RequestBody NominaSimpleDTO payload) {
+    public NominaDTO update(@PathVariable Long id, @RequestBody NominaSimpleDTO payload) {
         return nominaService.update(id, payload);
     }
 
@@ -42,6 +41,7 @@ public class NominaController {
         nominaService.delete(id);
         return ResponseEntity.noContent().build();
     }
+
 
     // Sub-CRUDs
     @PostMapping("/{nominaId}/bonos")

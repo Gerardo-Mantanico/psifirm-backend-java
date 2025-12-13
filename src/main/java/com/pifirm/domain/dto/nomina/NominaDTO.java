@@ -17,7 +17,7 @@ public record NominaDTO(
         Long metodoPagoId,
         String detallePago,
         LocalDate fechaCierre,
-        List<NominaDetalleDTO> bonos,
+       List<NominaDetalleDTO> bonos,
         List<NominaDetalleDTO> retenciones,
         List<NominaDetalleDTO> descuentos
 ) {}

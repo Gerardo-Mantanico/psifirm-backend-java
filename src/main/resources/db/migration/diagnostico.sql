@@ -55,3 +55,25 @@ CREATE TABLE impresion_diagnostica(
     nivel_funcionamiento INT NOT NULL,
 
 );
+
+
+
+-- Stock actual
+SELECT
+    m.nombre_comercial,
+    SUM(l.cantidad) AS stock_actual
+FROM medicamentos m
+         JOIN lotes l ON l.medicamento_id = m.id
+GROUP BY m.nombre_comercial;
+
+-- Historial de movimientos
+SELECT
+    m.nombre_comercial,
+    mi.tipo_movimiento,
+    mi.cantidad,
+    mi.fecha,
+    mi.observacion
+FROM movimientos_inventario mi
+         JOIN lotes l ON mi.lote_id = l.id
+         JOIN medicamentos m ON l.medicamento_id = m.id
+ORDER BY mi.fecha;
