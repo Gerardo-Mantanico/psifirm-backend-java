@@ -6,7 +6,9 @@ CREATE TABLE categorias (
 
 CREATE TABLE proveedores (
                              id SERIAL PRIMARY KEY,
-                             nombre VARCHAR(150) NOT NULL
+                             nombre VARCHAR(150) NOT NULL,
+                             email VARCHAR(100),
+                             telefono VARCHAR(20)
 );
 
 CREATE TABLE unidades_medida (

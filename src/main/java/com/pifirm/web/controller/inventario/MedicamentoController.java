@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/inventario/medicamentos")
+@RequestMapping("/medicamentos")
 public class MedicamentoController {
 
     private final MedicamentoService medicamentoService;
@@ -34,26 +34,15 @@ public class MedicamentoController {
         return ResponseEntity.noContent().build();
     }
 
+
     @GetMapping("/{id}")
-    public ResponseEntity<MedicamentoDTO> getById(@PathVariable Long id) {
-        MedicamentoDTO d = medicamentoService.findById(id);
-        if (d == null) return ResponseEntity.notFound().build();
-        return ResponseEntity.ok(d);
-    }
-
-    @GetMapping
-    public ResponseEntity<List<MedicamentoDTO>> list() {
-        return ResponseEntity.ok(medicamentoService.findAll());
-    }
-
-    @GetMapping("/detalle/{id}")
     public ResponseEntity<MedicamentoDetalleDTO> getByIdDetalle(@PathVariable Long id) {
         MedicamentoDetalleDTO d = medicamentoService.findByIdDetalle(id);
         if (d == null) return ResponseEntity.notFound().build();
         return ResponseEntity.ok(d);
     }
 
-    @GetMapping("/detalle")
+    @GetMapping("")
     public ResponseEntity<List<MedicamentoDetalleDTO>> listDetalle() {
         return ResponseEntity.ok(medicamentoService.findAllDetalle());
     }

@@ -8,6 +8,8 @@ import com.pifirm.persistence.entity.inventario.FormaFarmaceuticaEntidad;
 import com.pifirm.persistence.entity.inventario.CategoriaProductoEntidad;
 import com.pifirm.domain.repository.FormaFarmaceuticaRepository;
 import com.pifirm.domain.repository.CategoriaProductoRepository;
+import com.pifirm.domain.repository.UnidadMedidaRepository;
+import com.pifirm.persistence.entity.inventario.*;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,11 +25,31 @@ public class MedicamentoService {
     private final MedicamentoRepository medicamentoRepository;
     private final FormaFarmaceuticaRepository formaRepo;
     private final CategoriaProductoRepository categoriaRepo;
+    private final PrincipioActivoService principioActivoService;
+    private final UnidadMedidaRepository unidadMedidaRepository;
 
 
     public MedicamentoDTO create(MedicamentoDTO dto) {
         MedicamentoEntidad e = toEntity(dto);
         MedicamentoEntidad saved = medicamentoRepository.save(e);
+
+        if (dto.getPrincipioActivoId() != null && dto.getUnidadMedidaId() != null && dto.getConcentracion() != null) {
+            MedicamentoPrincipioActivoEntidad mpa = new MedicamentoPrincipioActivoEntidad();
+            mpa.setMedicamento(saved);
+
+            PrincipioActivoEntidad pa = principioActivoService.findById(dto.getPrincipioActivoId())
+                .orElseThrow(() -> new RuntimeException("Principio Activo no encontrado"));
+            mpa.setPrincipioActivo(pa);
+
+            UnidadMedidaEntidad um = unidadMedidaRepository.findById(dto.getUnidadMedidaId())
+                .orElseThrow(() -> new RuntimeException("Unidad de Medida no encontrada"));
+            mpa.setUnidadMedida(um);
+
+            mpa.setConcentracion(dto.getConcentracion());
+            saved.getPrincipios().add(mpa);
+            medicamentoRepository.save(saved);
+        }
+
         return toDto(saved);
     }
 
@@ -46,6 +68,27 @@ public class MedicamentoService {
             CategoriaProductoEntidad c = categoriaRepo.findById(dto.getCategoriaId()).orElse(null);
             existing.setCategoria(c);
         }
+
+        // Limpiar principios activos existentes y agregar los nuevos
+        existing.getPrincipios().clear();
+        medicamentoRepository.save(existing); // Guardar para remover las relaciones viejas
+
+        if (dto.getPrincipioActivoId() != null && dto.getUnidadMedidaId() != null && dto.getConcentracion() != null) {
+            MedicamentoPrincipioActivoEntidad mpa = new MedicamentoPrincipioActivoEntidad();
+            mpa.setMedicamento(existing);
+
+            PrincipioActivoEntidad pa = principioActivoService.findById(dto.getPrincipioActivoId())
+                    .orElseThrow(() -> new RuntimeException("Principio Activo no encontrado"));
+            mpa.setPrincipioActivo(pa);
+
+            UnidadMedidaEntidad um = unidadMedidaRepository.findById(dto.getUnidadMedidaId())
+                    .orElseThrow(() -> new RuntimeException("Unidad de Medida no encontrada"));
+            mpa.setUnidadMedida(um);
+
+            mpa.setConcentracion(dto.getConcentracion());
+            existing.getPrincipios().add(mpa);
+        }
+
         MedicamentoEntidad saved = medicamentoRepository.save(existing);
         return toDto(saved);
     }
@@ -80,6 +123,16 @@ public class MedicamentoService {
         d.setStockMinimo(e.getStockMinimo());
         d.setPrecioVenta(e.getPrecioVenta());
         d.setActivo(e.getActivo());
+
+        if (e.getPrincipios() != null && !e.getPrincipios().isEmpty()) {
+            // Asumiendo que solo hay un principio activo por la estructura del DTO
+            e.getPrincipios().stream().findFirst().ifPresent(mpa -> {
+                d.setPrincipioActivoId(mpa.getPrincipioActivo().getId());
+                d.setConcentracion(mpa.getConcentracion());
+                d.setUnidadMedidaId(mpa.getUnidadMedida().getId());
+            });
+        }
+
         return d;
     }
 
@@ -142,6 +195,7 @@ public class MedicamentoService {
             CategoriaProductoEntidad c = categoriaRepo.findById(d.getCategoriaId()).orElse(null);
             e.setCategoria(c);
         }
+        // La lógica para añadir principios activos se maneja en create/update después de guardar la entidad.
         return e;
     }
 }

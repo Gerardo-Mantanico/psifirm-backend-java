@@ -1,7 +1,13 @@
 package com.pifirm.domain.dto.inventario;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.math.BigDecimal;
 
+@Data
+@NoArgsConstructor
 public class MedicamentoDTO {
 
     private Long id;
@@ -12,71 +18,10 @@ public class MedicamentoDTO {
     private Integer stockMinimo;
     private BigDecimal precioVenta;
     private Boolean activo;
+    private Long principioActivoId;
+    private BigDecimal concentracion;
+    private Long unidadMedidaId;
 
-    public MedicamentoDTO() {
-    }
 
-    public Long getId() {
-        return id;
-    }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getNombreComercial() {
-        return nombreComercial;
-    }
-
-    public void setNombreComercial(String nombreComercial) {
-        this.nombreComercial = nombreComercial;
-    }
-
-    public Long getFormaFarmaceuticaId() {
-        return formaFarmaceuticaId;
-    }
-
-    public void setFormaFarmaceuticaId(Long formaFarmaceuticaId) {
-        this.formaFarmaceuticaId = formaFarmaceuticaId;
-    }
-
-    public Long getCategoriaId() {
-        return categoriaId;
-    }
-
-    public void setCategoriaId(Long categoriaId) {
-        this.categoriaId = categoriaId;
-    }
-
-    public Integer getUnidadesPorEmpaque() {
-        return unidadesPorEmpaque;
-    }
-
-    public void setUnidadesPorEmpaque(Integer unidadesPorEmpaque) {
-        this.unidadesPorEmpaque = unidadesPorEmpaque;
-    }
-
-    public Integer getStockMinimo() {
-        return stockMinimo;
-    }
-
-    public void setStockMinimo(Integer stockMinimo) {
-        this.stockMinimo = stockMinimo;
-    }
-
-    public BigDecimal getPrecioVenta() {
-        return precioVenta;
-    }
-
-    public void setPrecioVenta(BigDecimal precioVenta) {
-        this.precioVenta = precioVenta;
-    }
-
-    public Boolean getActivo() {
-        return activo;
-    }
-
-    public void setActivo(Boolean activo) {
-        this.activo = activo;
-    }
 }
