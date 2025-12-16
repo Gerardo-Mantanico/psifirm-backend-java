@@ -17,8 +17,14 @@ public record hcResDto(
         Boolean estado,
 
         //informacion  del paciente
-        InformacionPacienteResDto informacionPacienteResDto,
-        AntecedentesPersonaleResDto antecedentesPersonalesDto,
-        HistorialPersonalResDto historialPersonalResDto
+        InformacionPacienteResDto indentificacionPaciente,
+        AntecedentesPersonaleResDto antecedentesFamiliares,
+        HistorialPersonalResDto historialPersonal
+
+        //evaluacion psicologica inicial
+
+         //estado actual
+
+        //escala o prueba aplicadas
 ) {
 }
