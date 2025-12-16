@@ -34,6 +34,9 @@ public class MedicamentoEntidad {
     @Column(name = "stock_minimo")
     private Integer stockMinimo = 0;
 
+    @Column(name = "stock_total")
+    private Long stockTotal = 0L;
+
     @Column(name = "precio_venta", precision = 10, scale = 2, nullable = false)
     private BigDecimal precioVenta;
 
@@ -97,6 +100,14 @@ public class MedicamentoEntidad {
 
     public void setStockMinimo(Integer stockMinimo) {
         this.stockMinimo = stockMinimo;
+    }
+
+    public Long getStockTotal() {
+        return stockTotal;
+    }
+
+    public void setStockTotal(Long stockTotal) {
+        this.stockTotal= stockTotal;
     }
 
     public BigDecimal getPrecioVenta() {

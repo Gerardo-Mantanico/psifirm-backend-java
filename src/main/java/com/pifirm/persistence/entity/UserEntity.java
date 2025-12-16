@@ -46,6 +46,9 @@ public class UserEntity implements UserDetails {
     @Column(name = "phone_number", nullable = false, length = 20)
     private String phoneNumber;
 
+    @NotNull
+    private Long dpi;
+
     @Size(max = 100)
     @NotNull
     @Column(name = "password", nullable = false, length = 100)

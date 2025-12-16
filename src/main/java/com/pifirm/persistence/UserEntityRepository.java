@@ -6,10 +6,12 @@ import com.pifirm.domain.repository.UserRepository;
 import com.pifirm.persistence.crud.CrudUser;
 import com.pifirm.persistence.entity.UserEntity;
 import com.pifirm.persistence.mapper.UserMapper;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import org.springframework.stereotype.Repository;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -17,6 +19,9 @@ public class UserEntityRepository implements UserRepository {
 
     private final CrudUser crudUser;
     private final UserMapper userMapper;
+
+    @PersistenceContext
+    private EntityManager em;
 
     public UserEntityRepository(CrudUser crudUser, UserMapper userMapper) {
         this.crudUser = crudUser;
@@ -38,7 +43,7 @@ public class UserEntityRepository implements UserRepository {
     }
 
     @Override
-    public Page<UserDto> allActiveUsers(Pageable pageable) {
+    public org.springframework.data.domain.Page<UserDto> allActiveUsers(org.springframework.data.domain.Pageable pageable) {
         return this.crudUser.findAll(pageable).map(userMapper::toDto);
     }
 
@@ -52,8 +57,29 @@ public class UserEntityRepository implements UserRepository {
         return this.crudUser.findByIdAndActiveTrue(id);
     }
 
+
+
     @Override
-    public Optional<UserEntity> find(Long id) {
-        return this.crudUser.findById(id);
+    public List<UserEntity> findByDpiOrName(String dpi, String name) {
+        String base = " FROM UserEntity u WHERE u.active = true";
+        List<String> clauses = new ArrayList<>();
+
+        if (dpi != null && !dpi.isBlank()) {
+            clauses.add(" CAST(u.dpi AS text) LIKE :dpi ");
+        }
+        if (name != null && !name.isBlank()) {
+            clauses.add(" (LOWER(u.firstname) LIKE :name OR LOWER(u.lastname) LIKE :name OR LOWER(CONCAT(u.firstname, ' ', u.lastname)) LIKE :name) ");
+        }
+
+        String where = base;
+        if (!clauses.isEmpty()) {
+            where += " AND " + String.join(" AND ", clauses);
+        }
+
+        String selectJpql = "SELECT u" + where + " ORDER BY u.id";
+        jakarta.persistence.TypedQuery<UserEntity> query = em.createQuery(selectJpql, UserEntity.class);
+        if (dpi != null && !dpi.isBlank()) query.setParameter("dpi", dpi + "%");
+        if (name != null && !name.isBlank()) query.setParameter("name", name.toLowerCase() + "%");
+        return query.getResultList();
     }
 }

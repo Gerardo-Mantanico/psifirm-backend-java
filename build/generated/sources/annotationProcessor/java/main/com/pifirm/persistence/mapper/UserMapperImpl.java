@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2025-12-13T16:50:51-0600",
+    date = "2025-12-15T23:20:19-0600",
     comments = "version: 1.6.3, compiler: IncrementalProcessingEnvironment from gradle-language-java-9.2.1.jar, environment: Java 25.0.1 (Arch Linux)"
 )
 @Component
@@ -30,6 +30,7 @@ public class UserMapperImpl implements UserMapper {
         String lastname = null;
         String email = null;
         String phoneNumber = null;
+        Long dpi = null;
         Instant createdAt = null;
         Instant updatedAt = null;
         Boolean active = null;
@@ -41,13 +42,14 @@ public class UserMapperImpl implements UserMapper {
         lastname = userEntity.getLastname();
         email = userEntity.getEmail();
         phoneNumber = userEntity.getPhoneNumber();
+        dpi = userEntity.getDpi();
         createdAt = userEntity.getCreatedAt();
         updatedAt = userEntity.getUpdatedAt();
         active = userEntity.getActive();
         role = roleEntityToRoleDto( userEntity.getRole() );
         use2fa = userEntity.getUse2fa();
 
-        UserDto userDto = new UserDto( id, firstname, lastname, email, phoneNumber, createdAt, updatedAt, active, role, use2fa );
+        UserDto userDto = new UserDto( id, firstname, lastname, email, phoneNumber, dpi, createdAt, updatedAt, active, role, use2fa );
 
         return userDto;
     }
@@ -83,6 +85,7 @@ public class UserMapperImpl implements UserMapper {
         userEntity.setActive( userDto.active() );
         userEntity.setCreatedAt( userDto.createdAt() );
         userEntity.setUpdatedAt( userDto.updatedAt() );
+        userEntity.setDpi( userDto.dpi() );
 
         return userEntity;
     }
@@ -100,6 +103,7 @@ public class UserMapperImpl implements UserMapper {
         userEntity.setEmail( userDto.getEmail() );
         userEntity.setPhoneNumber( userDto.getPhoneNumber() );
         userEntity.setPassword( userDto.getPassword() );
+        userEntity.setDpi( userDto.getDpi() );
 
         return userEntity;
     }

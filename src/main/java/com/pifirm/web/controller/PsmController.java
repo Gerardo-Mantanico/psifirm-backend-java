@@ -3,6 +3,7 @@ package com.pifirm.web.controller;
 import com.pifirm.domain.dto.psm.PsmReqDto;
 import com.pifirm.domain.dto.psm.PsmResDto;
 import com.pifirm.domain.service.PsmServicie;
+import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.validation.Valid;
 import org.hibernate.validator.constraints.pl.REGON;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,5 +31,10 @@ public class PsmController {
     public ResponseEntity<?> updatePsm(@Valid @RequestBody PsmReqDto psmDto, @PathVariable Long id) {
         psmServicie.updatePsm(psmDto, id);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/{userId}")
+    public ResponseEntity<PsmResDto> search(@PathVariable Long userId) {
+        return ResponseEntity.ok(this.psmServicie.searchUserId(userId));
     }
 }

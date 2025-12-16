@@ -14,10 +14,10 @@ public record NominaDTO(
         Integer sesionesTrabajadas,
         BigDecimal salarioBruto,
         BigDecimal salarioNetoAdeudado,
-        Long metodoPagoId,
+        String metodoPago,
         String detallePago,
         LocalDate fechaCierre,
-       List<NominaDetalleDTO> bonos,
+        List<NominaDetalleDTO> bonos,
         List<NominaDetalleDTO> retenciones,
         List<NominaDetalleDTO> descuentos
 ) {}

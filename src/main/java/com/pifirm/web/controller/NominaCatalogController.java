@@ -26,17 +26,17 @@ public class NominaCatalogController {
         return nominaCatalogService.listMetodosPago();
     }
 
-    @GetMapping("/tipos-bono")
+    @GetMapping("/bonos")
     public List<TipoBonoEntity> listTiposBono() {
         return nominaCatalogService.listTiposBono();
     }
 
-    @GetMapping("/tipos-retencion")
+    @GetMapping("/retenciones")
     public List<TipoRetencionEntity> listTiposRetencion() {
         return nominaCatalogService.listTiposRetencion();
     }
 
-    @GetMapping("/tipos-descuento")
+    @GetMapping("/descuentos")
     public List<TipoDescuentoEntity> listTiposDescuento() {
         return nominaCatalogService.listTiposDescuento();
     }

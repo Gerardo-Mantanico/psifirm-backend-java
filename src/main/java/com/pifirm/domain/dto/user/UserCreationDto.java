@@ -23,13 +23,16 @@ public class UserCreationDto {
     @NotBlank
     private String password;
 
+    @Min(value = 1000000000000L, message = "El DPI debe tener al menos 13 digitos")
+    private Long dpi;
+
 
     Long roleId;
 
     public UserCreationDto() {
     }
 
-    public UserCreationDto(String firstname, String lastname, String email, String phoneNumber, String password
+    public UserCreationDto(String firstname, String lastname, String email, String phoneNumber, String password, Long dpi
     ) {
         this.firstname = firstname;
         this.lastname = lastname;
@@ -37,6 +40,7 @@ public class UserCreationDto {
         this.phoneNumber = phoneNumber;
         this.password = password;
         this.roleId = roleId;
+        this.dpi = dpi;
     }
 
     public Long getRoleId() {
@@ -85,5 +89,12 @@ public class UserCreationDto {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public void setDpi(Long dpi) {
+        this.dpi = dpi;
+    }
+    public  Long getDpi() {
+        return dpi;
     }
 }

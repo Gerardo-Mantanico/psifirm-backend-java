@@ -20,4 +20,5 @@ public interface NominaRepository extends JpaRepository<NominaEntity, Long> {
            "LEFT JOIN FETCH n.user " +
            "LEFT JOIN FETCH n.metodoPago")
     List<NominaEntity> findAllWithRelations();
+    Optional<NominaEntity> findByUser_Email(String userEmail);
 }

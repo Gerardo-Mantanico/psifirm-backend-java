@@ -5,6 +5,7 @@ import com.pifirm.domain.dto.nomina.NominaDetalleDTO;
 import com.pifirm.domain.dto.nomina.NominaDetalleReqDTO;
 import com.pifirm.domain.dto.nomina.NominaSimpleDTO;
 import com.pifirm.domain.service.NominaService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,9 +26,9 @@ public class NominaController {
     }
 
 
-    @GetMapping
-    public List<NominaDTO> list() {
-        return nominaService.list();
+    @GetMapping("/{id}")
+    public ResponseEntity<NominaDTO> nomina(@PathVariable String id) {
+        return ResponseEntity.ok(nominaService.search(id));
     }
 
 
@@ -44,9 +45,9 @@ public class NominaController {
 
 
     // Sub-CRUDs
-    @PostMapping("/{nominaId}/bonos")
-    public NominaDetalleDTO addBono(@PathVariable Long nominaId, @RequestBody NominaDetalleReqDTO bono) {
-        return nominaService.addBonoFromDto(nominaId, bono);
+    @PostMapping("/bonos")
+    public NominaDetalleDTO addBono(@Valid @RequestBody NominaDetalleReqDTO bono) {
+        return nominaService.addBonoFromDto( bono);
     }
 
     @DeleteMapping("/bonos/{id}")
@@ -55,9 +56,9 @@ public class NominaController {
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping("/{nominaId}/retenciones")
-    public NominaDetalleDTO addRetencion(@PathVariable Long nominaId, @RequestBody NominaDetalleReqDTO ret) {
-        return nominaService.addRetencionFromDto(nominaId, ret);
+    @PostMapping("/retenciones")
+    public NominaDetalleDTO addRetencion(@Valid @RequestBody NominaDetalleReqDTO ret) {
+        return nominaService.addRetencionFromDto(ret);
     }
 
     @DeleteMapping("/retenciones/{id}")
@@ -66,9 +67,9 @@ public class NominaController {
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping("/{nominaId}/descuentos")
-    public NominaDetalleDTO addDescuento(@PathVariable Long nominaId, @RequestBody NominaDetalleReqDTO des) {
-        return nominaService.addDescuentoFromDto(nominaId, des);
+    @PostMapping("/descuentos")
+    public NominaDetalleDTO addDescuento(@Valid @RequestBody NominaDetalleReqDTO des) {
+        return nominaService.addDescuentoFromDto(des);
     }
 
     @DeleteMapping("/descuentos/{id}")

@@ -7,6 +7,7 @@ import com.pifirm.domain.dto.especialidad.EspecialidadResDto;
 import java.math.BigDecimal;
 
 public record ILEmpleadoResDto(
+        Long id,
         EspecialidadResDto especialidad,
         String colegiado,
         AreaResDto area

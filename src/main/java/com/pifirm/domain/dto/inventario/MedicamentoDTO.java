@@ -21,7 +21,6 @@ public class MedicamentoDTO {
     private Long principioActivoId;
     private BigDecimal concentracion;
     private Long unidadMedidaId;
-
-
+    private Long stockTotal;
 
 }

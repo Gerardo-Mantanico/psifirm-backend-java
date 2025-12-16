@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.Date;
+import java.util.List;
 
 
 @Service
@@ -48,7 +49,7 @@ public class UserService {
 
     @Transactional
     public UserDto update(UserUpdateDto userUpdateDto, Long userId) {
-        UserEntity userEntity = this.userRepository.find(userId)
+        UserEntity userEntity = this.userRepository.findById(userId)
                 .orElseThrow(() -> new GeneralException("user-not-found", "Usuario no encontrado"));
 
         if (userUpdateDto.passwordNotEmpty())
@@ -88,7 +89,7 @@ public class UserService {
     }
     @Transactional
     public UserDto getById(Long userId) {
-        UserEntity userEntity = this.userRepository.find(userId)
+        UserEntity userEntity = this.userRepository.findById(userId)
                 .orElseThrow(() -> new GeneralException("user-not-found", "Usuario no encontrado"));
         return this.userMapper.toDto(userEntity);
     }
@@ -117,5 +118,12 @@ public class UserService {
         userEntity.setUserRole(userRoleEntity);
         userEntity = userRepository.save(userEntity);
         return this.userMapper.toDto(userEntity);
+    }
+
+
+    @Transactional
+    public List<UserDto> searchByDpiOrName(String dpi, String name) {
+        List<UserEntity> list = this.userRepository.findByDpiOrName(dpi, name);
+        return userMapper.toDto(list);
     }
 }

@@ -21,6 +21,7 @@ public class MedicamentoDetalleDTO {
     private Integer stockMinimo;
     private BigDecimal precioVenta;
     private Boolean activo;
+    private Long stockTotal;
     private List<PrincipioActivoDetalleDTO> principiosActivos = new ArrayList<>();
 
     // Clases internas para detalles de relaciones

@@ -46,30 +46,25 @@ public class PsmServicie {
 
     @Transactional
     public void updatePsm(PsmReqDto psmDto, Long userId) {
-        this.userService.getById(userId);
+        //validar si el usuairo existe
+        var update =  this.searchUserId(userId);
 
-        var info = psmMapper.toILEmpleadoEntity(psmDto.ilempleadoReqDto());
+        System.out.println("que mamada "+psmDto.ilempleadoReqDto());
 
-        UserEntity userEntity = new UserEntity();
-        userEntity.setId(userId);
-        info.setUser(userEntity);
-
-        AreaEntity areaEntity = new AreaEntity();
-        areaEntity.setId(psmDto.ilempleadoReqDto().areaId());
-        info.setArea(areaEntity);
-
-        EspecialidadEntity especialidadEntity = new EspecialidadEntity();
-        especialidadEntity.setId(psmDto.ilempleadoReqDto().especialidadId());
-        info.setEspecialidad(especialidadEntity);
+        this.ilempleadoService.update(psmDto.ilempleadoReqDto(), update.ilempleadoResDto().id());
+        this.horarioService.update(userId, psmDto.horarioReqDto());
     }
 
     public PsmResDto getPsmByUserId() {
         Long userId = this.userUtilsService.getCurrent().getId();
         var ilempleadoResDto = this.ilempleadoService.getByUserId(userId);
         var horarioReqDto= this.horarioService.getByUserId(userId);
+        return new PsmResDto(ilempleadoResDto, horarioReqDto);
+    }
 
-
-
+    public PsmResDto searchUserId(Long userId) {
+        var ilempleadoResDto = this.ilempleadoService.getByUserId(userId);
+        var horarioReqDto= this.horarioService.getByUserId(userId);
         return new PsmResDto(ilempleadoResDto, horarioReqDto);
     }
 }

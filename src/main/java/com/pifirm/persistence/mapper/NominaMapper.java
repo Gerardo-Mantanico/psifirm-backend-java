@@ -22,7 +22,7 @@ public interface NominaMapper {
     NominaEntity toEntity(NominaSimpleDTO dto);
 
     // Mapear desde la entidad hacia el DTO
-    @Mapping(source = "metodoPago.id", target = "metodoPagoId")
+    @Mapping(source = "metodoPago.descripcion.", target = "metodoPago")
     NominaDTO toDto(NominaEntity entity);
 
     List<NominaDTO> toDtos(List<NominaEntity> entities);

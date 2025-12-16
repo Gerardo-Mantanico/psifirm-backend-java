@@ -31,9 +31,9 @@ public class NominaService {
     private final NominaMapper nominaMapper;
 
     @Transactional
-    public List<NominaDTO> list() {
-
-        return this.nominaMapper.toDtos(nominaRepository.findAll());
+    public NominaDTO search(String data) {
+        var nomina =  this.nominaRepository.findByUser_Email(data).orElseThrow(()-> new GeneralException("error","no existe una nomina asociada con este correo"));
+        return this.nominaMapper.toDto(nomina);
     }
 
     @Transactional
@@ -92,13 +92,13 @@ public class NominaService {
 
     // Sub-CRUDs usando DTO de detalle (tipoId, monto)
     @Transactional
-    public NominaDetalleDTO addBonoFromDto(Long nominaId, NominaDetalleReqDTO bonoDto) {
+    public NominaDetalleDTO addBonoFromDto( NominaDetalleReqDTO bonoDto) {
         this.nominaBonoRepository.findByTipoBono_Id(bonoDto.tipoId()).ifPresent(b -> {
             throw new GeneralException("error", "El bono de este tipo ya ha sido agregado a la nómina.");
         });
         NominaBonoEntity nominaBonoEntity = new NominaBonoEntity();
         nominaBonoEntity.setMonto(bonoDto.monto());
-        nominaBonoEntity.setNomina(getById(nominaId));
+        nominaBonoEntity.setNomina(getById(bonoDto.nominaId()));
 
         TipoBonoEntity tipoBono = new TipoBonoEntity();
         tipoBono.setId(bonoDto.tipoId());
@@ -108,14 +108,14 @@ public class NominaService {
     }
 
     @Transactional
-    public NominaDetalleDTO addRetencionFromDto(Long nominaId, NominaDetalleReqDTO retDto) {
+    public NominaDetalleDTO addRetencionFromDto( NominaDetalleReqDTO retDto) {
         this.nominaRetencionRepository.findByTipoRetencion_Id(retDto.tipoId()).ifPresent(b -> {
             throw new GeneralException("error", "El bono de este tipo ya ha sido agregado a la nómina.");
         });
 
         NominaRetencionEntity nominaRetencionEntity = new NominaRetencionEntity();
         nominaRetencionEntity.setMonto(retDto.monto());
-        nominaRetencionEntity.setNomina(getById(nominaId));
+        nominaRetencionEntity.setNomina(getById(retDto.nominaId()));
 
         TipoRetencionEntity tipoRetencion = new TipoRetencionEntity();
         tipoRetencion.setId(retDto.tipoId());
@@ -126,14 +126,14 @@ public class NominaService {
     }
 
     @Transactional
-    public NominaDetalleDTO addDescuentoFromDto(Long nominaId, NominaDetalleReqDTO desDto) {
+    public NominaDetalleDTO addDescuentoFromDto( NominaDetalleReqDTO desDto) {
         this.nominaDescuentoRepository.findByTipoDescuento_Id(desDto.tipoId()).ifPresent(b -> {
             throw new GeneralException("error", "El bono de este tipo ya ha sido agregado a la nómina.");
         });
 
         NominaDescuentoEntity nominaDescuentoEntity = new NominaDescuentoEntity();
         nominaDescuentoEntity.setMonto(desDto.monto());
-        nominaDescuentoEntity.setNomina(getById(nominaId));
+        nominaDescuentoEntity.setNomina(getById(desDto.nominaId()));
 
         TipoDescuentoEntity tipoDescuento = new TipoDescuentoEntity();
         tipoDescuento.setId(desDto.tipoId());

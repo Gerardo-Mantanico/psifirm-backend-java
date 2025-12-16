@@ -10,6 +10,7 @@ public record UserDto(
         String lastname,
         String email,
         String phoneNumber,
+        Long dpi,
         Instant createdAt,
         Instant updatedAt,
         Boolean active,

@@ -20,6 +20,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RequestMapping("/users")
 @RestController
 public class UserController {
@@ -78,5 +80,15 @@ public class UserController {
     @PostMapping
     public ResponseEntity<UserDto> signup(@RequestBody @Valid UserCreationDto userCreationDto) {
         return ResponseEntity.ok(this.userService.add(userCreationDto));
+    }
+
+
+    @GetMapping("/search")
+    public List<UserDto> search(
+            @RequestParam(required = false) String dpi,
+            @RequestParam(required = false) String name
+    ) {
+        List<UserDto> pageResult = userService.searchByDpiOrName(dpi, name);
+        return pageResult;
     }
 }

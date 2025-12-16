@@ -1,3 +1,11 @@
+-- =========================================================
+-- SISTEMA DE INVENTARIO DE MEDICAMENTOS
+-- TODO EN UN SOLO ARCHIVO
+-- =========================================================
+
+-- =========================
+-- TABLAS BASE
+-- =========================
 
 CREATE TABLE categorias (
                             id SERIAL PRIMARY KEY,
@@ -27,8 +35,6 @@ CREATE TABLE ubicaciones (
                              nombre VARCHAR(100) NOT NULL
 );
 
-
-
 CREATE TABLE principios_activos (
                                     id SERIAL PRIMARY KEY,
                                     nombre VARCHAR(150) UNIQUE NOT NULL
@@ -42,10 +48,10 @@ CREATE TABLE medicamentos (
                               categoria_id INT REFERENCES categorias(id),
                               unidades_por_empaque INT NOT NULL,
                               stock_minimo INT DEFAULT 0,
+                              stock_total INT DEFAULT 0,
                               precio_venta NUMERIC(10,2) NOT NULL,
                               activo BOOLEAN DEFAULT TRUE
 );
-
 
 
 CREATE TABLE medicamento_principio_activo (
@@ -68,56 +74,76 @@ CREATE TABLE lotes (
                        precio_compra NUMERIC(10,2)
 );
 
-
 CREATE TABLE movimientos_inventario (
                                         id SERIAL PRIMARY KEY,
                                         lote_id INT REFERENCES lotes(id) ON DELETE CASCADE,
                                         tipo_movimiento VARCHAR(20)
                                             CHECK (tipo_movimiento IN ('ENTRADA','SALIDA')),
-                                        cantidad INT NOT NULL,
+                                        cantidad INT NOT NULL CHECK (cantidad > 0),
                                         fecha TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                                         observacion TEXT
 );
 
-
-
-CREATE OR REPLACE FUNCTION fn_actualizar_stock()
+CREATE OR REPLACE FUNCTION fn_actualizar_stock_medicamento()
 RETURNS TRIGGER AS $$
 BEGIN
-    IF NEW.tipo_movimiento = 'SALIDA' THEN
-UPDATE lotes
-SET cantidad = cantidad - NEW.cantidad
-WHERE id = NEW.lote_id;
-ELSE
-UPDATE lotes
-SET cantidad = cantidad + NEW.cantidad
-WHERE id = NEW.lote_id;
-END IF;
+UPDATE medicamentos
+SET stock_total = stock_total + NEW.cantidad
+WHERE id = NEW.medicamento_id;
+
 RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE TRIGGER trg_stock
-    AFTER INSERT ON movimientos_inventario
+CREATE TRIGGER trg_actualizar_stock_medicamento
+    AFTER INSERT ON lotes
     FOR EACH ROW
-    EXECUTE FUNCTION fn_actualizar_stock();
+    EXECUTE FUNCTION fn_actualizar_stock_medicamento();
 
+
+
+
+-- FUNCIÓN: REGISTRAR ENTRADA AUTOMÁTICA AL CREAR LOTE
+CREATE OR REPLACE FUNCTION fn_registrar_entrada_lote()
+RETURNS TRIGGER AS $$
+BEGIN
+INSERT INTO movimientos_inventario (
+    lote_id,
+    tipo_movimiento,
+    cantidad,
+    observacion
+) VALUES (
+             NEW.id,
+             'ENTRADA',
+             NEW.cantidad,
+             'Entrada automática por registro de lote'
+         );
+
+RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trg_entrada_lote
+    AFTER INSERT ON lotes
+    FOR EACH ROW
+    EXECUTE FUNCTION fn_registrar_entrada_lote();
 
 
 
 INSERT INTO categorias (nombre) VALUES ('Analgésicos');
 INSERT INTO proveedores (nombre) VALUES ('Proveedor Central');
 
-INSERT INTO unidades_medida (nombre, simbolo) VALUES
-    ('Miligramo','mg');
+INSERT INTO unidades_medida (nombre, simbolo)
+VALUES ('Miligramo','mg');
 
-INSERT INTO formas_farmaceuticas (nombre) VALUES ('Tableta');
-INSERT INTO ubicaciones (nombre) VALUES ('Bodega Principal');
+INSERT INTO formas_farmaceuticas (nombre)
+VALUES ('Tableta');
+
+INSERT INTO ubicaciones (nombre)
+VALUES ('Bodega Principal');
 
 INSERT INTO principios_activos (nombre)
 VALUES ('Ácido acetilsalicílico');
-
-
 
 INSERT INTO medicamentos (
     nombre_comercial,
@@ -148,6 +174,7 @@ INSERT INTO medicamento_principio_activo (
          );
 
 
+-- INSERTAR LOTE (AUTOMÁTICAMENTE CREA ENTRADA Y ACTUALIZA STOCK)
 INSERT INTO lotes (
     medicamento_id,
     proveedor_id,
@@ -166,20 +193,7 @@ INSERT INTO lotes (
              25.00
          );
 
-
-INSERT INTO movimientos_inventario (
-    lote_id,
-    tipo_movimiento,
-    cantidad,
-    observacion
-) VALUES (
-             (SELECT id FROM lotes WHERE numero_lote='L001'),
-             'ENTRADA',
-             100,
-             'Compra inicial'
-         );
-
-
+-- SALIDA DE INVENTARIO
 INSERT INTO movimientos_inventario (
     lote_id,
     tipo_movimiento,
@@ -191,4 +205,3 @@ INSERT INTO movimientos_inventario (
              3,
              'Venta mostrador'
          );
-

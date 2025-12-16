@@ -60,6 +60,9 @@ public class MedicamentoService {
         existing.setStockMinimo(dto.getStockMinimo());
         existing.setPrecioVenta(dto.getPrecioVenta());
         existing.setActivo(dto.getActivo());
+        // Nuevo campo stockTotal
+        existing.setStockTotal(dto.getStockTotal());
+
         if (dto.getFormaFarmaceuticaId() != null) {
             FormaFarmaceuticaEntidad f = formaRepo.findById(dto.getFormaFarmaceuticaId()).orElse(null);
             existing.setFormaFarmaceutica(f);
@@ -123,6 +126,8 @@ public class MedicamentoService {
         d.setStockMinimo(e.getStockMinimo());
         d.setPrecioVenta(e.getPrecioVenta());
         d.setActivo(e.getActivo());
+        // Mapear nuevo campo stockTotal
+        d.setStockTotal(e.getStockTotal());
 
         if (e.getPrincipios() != null && !e.getPrincipios().isEmpty()) {
             // Asumiendo que solo hay un principio activo por la estructura del DTO
@@ -156,6 +161,8 @@ public class MedicamentoService {
         d.setStockMinimo(e.getStockMinimo());
         d.setPrecioVenta(e.getPrecioVenta());
         d.setActivo(e.getActivo());
+        // Mapear nuevo campo stockTotal en detalle
+        d.setStockTotal(e.getStockTotal());
 
         // Agregar principios activos con unidad de medida
         if (e.getPrincipios() != null && !e.getPrincipios().isEmpty()) {
@@ -187,6 +194,8 @@ public class MedicamentoService {
         e.setStockMinimo(d.getStockMinimo());
         e.setPrecioVenta(d.getPrecioVenta());
         e.setActivo(d.getActivo());
+        // Mapear nuevo campo stockTotal desde DTO a entidad
+        e.setStockTotal(d.getStockTotal());
         if (d.getFormaFarmaceuticaId() != null) {
             FormaFarmaceuticaEntidad f = formaRepo.findById(d.getFormaFarmaceuticaId()).orElse(null);
             e.setFormaFarmaceutica(f);

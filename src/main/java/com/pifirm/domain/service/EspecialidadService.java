@@ -55,6 +55,13 @@ public class EspecialidadService {
         return especialidadMapper.toDto(entity);
     }
 
+
+    @Transactional
+    public EspecialidadEntity getByIdEntidad(Long id) {
+        return especialidadRepository.findById(id)
+                .orElseThrow(() -> new GeneralException("Especialidad-not-found", "Especialidad no encontrado"));
+    }
+
     @Transactional
     public void delete(Long id) {
         EspecialidadEntity entity = especialidadRepository.findById(id)

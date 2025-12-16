@@ -61,6 +61,14 @@ public class AreaService {
         return areaMapper.toDto(entity);
     }
 
+
+    @Transactional
+    public AreaEntity getByIdEntidad(Long id) {
+        return areaRepository.findById(id)
+                .orElseThrow(() -> new GeneralException("Area-not-found", "Area no encontrado"));
+
+    }
+
     @Transactional
     public void delete(Long id) {
         if (!areaRepository.existsById(id)) {

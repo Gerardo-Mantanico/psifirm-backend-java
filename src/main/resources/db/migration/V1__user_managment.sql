@@ -39,6 +39,7 @@ CREATE TABLE IF NOT EXISTS public.user
     email        character varying(100) COLLATE pg_catalog.default NOT NULL UNIQUE,
     phone_number character varying(20) COLLATE pg_catalog.default  NOT NULL,
     password     character varying(100) COLLATE pg_catalog.default NOT NULL,
+    dpi          BIGINT                                            NOT NULL UNIQUE,
     use_2fa      boolean                                           NOT NULL DEFAULT false,
     active       boolean                                           NOT NULL DEFAULT true,
     created_at   timestamp(3) without time zone                    NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -114,10 +115,10 @@ INSERT INTO public.role (name, description, created_at, updated_at)
 VALUES ('ADMIN', 'Administrador', Now(), Now());
 
 -- Insert admin
-INSERT INTO public.user (firstname, lastname, email, phone_number, password, active, created_at, updated_at)
+INSERT INTO public.user (firstname, lastname, email, phone_number, password, active, created_at, updated_at,dpi)
 VALUES ('Admin', '', 'webbank404@gmail.com', '12341234',
         '$2a$10$AqbbVC2uUKLvMWXrLj2TVuLMMN1BeEAHR5Qfxq001Rf61O43ZKfF6',
-        true, Now(), Now());
+        true, Now(), Now(),123456789);
 
 -- Assign role
 INSERT INTO public.user_role (user_id, role_id, created_at, updated_at)

@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/inventario/lotes")
+@RequestMapping("/lotes")
 public class LoteController {
 
     private final LoteService loteService;
