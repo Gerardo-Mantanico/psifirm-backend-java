@@ -12,16 +12,15 @@ public class AntecedentesPersonalesEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "hc_id", nullable = false)
-    private HistoriaClinicaEntity historiaClinica;
+    @Column(name = "hc_id")
+    private Long hcId;
 
     @NotNull
     @Column(name = "estructura_fa", nullable = false, columnDefinition = "TEXT")
     private String estructuraFa;
 
     @Column(name = "trastornos")
-    private Boolean trastornos;
+    private Boolean trastornos = false;
 
     @Column(name = "trastorno_detalles", columnDefinition = "TEXT")
     private String trastornoDetalles;

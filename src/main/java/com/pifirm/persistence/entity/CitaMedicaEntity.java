@@ -1,5 +1,6 @@
 package com.pifirm.persistence.entity;
 
+import com.pifirm.domain.enums.EstadoCita;
 import jakarta.persistence.*;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;

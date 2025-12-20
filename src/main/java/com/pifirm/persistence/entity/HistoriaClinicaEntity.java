@@ -41,6 +41,6 @@ public class HistoriaClinicaEntity {
     private Integer colegiadoPsicologo;
 
     @Column(name = "estado")
-    private Boolean estado = Boolean.TRUE;
+    private Boolean estado = Boolean.FALSE;
 }
 

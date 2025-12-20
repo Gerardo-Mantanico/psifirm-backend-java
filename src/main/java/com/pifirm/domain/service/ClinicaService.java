@@ -3,6 +3,7 @@ package com.pifirm.domain.service;
 import com.pifirm.domain.dto.clinica.ClinicaDto;
 import com.pifirm.domain.exception.GeneralException;
 import com.pifirm.domain.repository.ClinicaRepository;
+import com.pifirm.persistence.entity.CitaMedicaEntity;
 import com.pifirm.persistence.entity.ClinicaEntity;
 import com.pifirm.persistence.mapper.ClinicaMapper;
 import lombok.AllArgsConstructor;

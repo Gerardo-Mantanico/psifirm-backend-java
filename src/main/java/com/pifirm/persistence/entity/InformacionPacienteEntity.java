@@ -12,9 +12,8 @@ public class InformacionPacienteEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "hc_id", nullable = false)
-    private HistoriaClinicaEntity historiaClinica;
+    @Column(name = "hc_id")
+    private Long hcId;
 
     @NotNull
     @Column(name = "edad", nullable = false)

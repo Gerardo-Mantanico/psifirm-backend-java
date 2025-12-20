@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 @Service
 @AllArgsConstructor
 public class PsmServicie {
-    private final UserService userService;
+//private final UserService userService;
     private final ILEmpleadoService ilempleadoService;
     private final HorarioService horarioService;
     private final PsmMapper psmMapper;
@@ -21,7 +21,7 @@ public class PsmServicie {
 
     @Transactional
     public  void registerPsm(PsmReqDto psmDto, Long userId  ) {
-         this.userService.getById(userId);
+      //   this.userService.getById(userId);
 
         var info = psmMapper.toILEmpleadoEntity(psmDto.ilempleadoReqDto());
 

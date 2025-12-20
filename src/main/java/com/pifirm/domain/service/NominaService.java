@@ -23,7 +23,7 @@ public class NominaService {
     private final NominaBonoRepository nominaBonoRepository;
     private final NominaRetencionRepository nominaRetencionRepository;
     private final NominaDescuentoRepository nominaDescuentoRepository;
-    private final UserService userService;
+  //  private final UserService userService;
     private final MetodoPagoRepository metodoPagoRepository;
     private final TipoBonoRepository tipoBonoRepository;
     private final TipoRetencionRepository tipoRetencionRepository;
@@ -38,7 +38,7 @@ public class NominaService {
 
     @Transactional
     public NominaDTO create(NominaSimpleDTO dto) {
-        userService.getById(dto.userId());
+        //userService.getById(dto.userId());
         this.nominaRepository.findByUser_Id(dto.userId()).ifPresent(n -> {
             throw new GeneralException("error", "El usuario ya tiene una nómina asignada.");
         });

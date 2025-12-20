@@ -35,4 +35,10 @@ public class InfoPacienteService {
          this.infoPacienteRepository.save(updated);
     }
 
+    public InfPacienteReqDto userId(Long id) {
+        var entidad = this.infoPacienteRepository.findByUser_Id(id).orElseThrow(() -> new GeneralException("error", "No existen informacion adcional para este usuario"));
+        return this.infPacienteMapper.toDO(entidad);
+    }
+
+
 }

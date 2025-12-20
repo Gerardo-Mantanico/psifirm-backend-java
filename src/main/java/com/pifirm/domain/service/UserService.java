@@ -1,5 +1,7 @@
 package com.pifirm.domain.service;
 
+import com.pifirm.domain.dto.paciente.PacienteResDto;
+import com.pifirm.domain.dto.psm.PsmCompletado;
 import com.pifirm.domain.dto.user.UserCreationDto;
 import com.pifirm.domain.dto.user.UserDto;
 import com.pifirm.domain.dto.user.UserUpdateDto;
@@ -26,6 +28,8 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final RoleRepository roleRepository;
     private final UserMapper userMapper;
+    private final InfoPacienteService infoPacienteService;
+    private final PsmServicie psmService;
 
 
     @Transactional
@@ -125,5 +129,19 @@ public class UserService {
     public List<UserDto> searchByDpiOrName(String dpi, String name) {
         List<UserEntity> list = this.userRepository.findByDpiOrName(dpi, name);
         return userMapper.toDto(list);
+    }
+
+    @Transactional
+    public PacienteResDto paciente(Long userId){
+        var user = this.getById(userId);
+        var infoPaciente = this.infoPacienteService.userId(userId);
+        return new PacienteResDto(user, infoPaciente);
+    }
+
+    @Transactional
+    public PsmCompletado psicologo(Long userId){
+         var usesr = this.getById(userId);
+         var psmCompletado = this.psmService.searchUserId(userId);
+        return new PsmCompletado(usesr, psmCompletado);
     }
 }

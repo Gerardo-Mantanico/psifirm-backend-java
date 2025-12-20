@@ -13,7 +13,11 @@ import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDate;
 
 @Service
 @AllArgsConstructor
@@ -37,11 +41,6 @@ public class CitaService {
         ServicioEntity servicio = servicioRepository.findById(dto.servicioMedicoId())
                 .orElseThrow(() -> new GeneralException("servicio-not-found", "Servicio no encontrado"));
         entity.setPaciente(paciente);
-
-
-
-
-
         UserEntity medico = null;
         entity.setMedico(medico);
         entity.setServicioMedico(servicio);
@@ -116,8 +115,46 @@ public class CitaService {
     }
 
     @Transactional
-    public Page<CitaResDto> all(Pageable pageable) {
-        return citaRepository.findAll(pageable).map(entity -> citaMapper.toDto(entity));
+    public Page<CitaResDto> all(Pageable pageable , LocalDate date, String state) {
+        var page = citaRepository.findAll(pageable);
+        var filtered = page.getContent().stream()
+                .filter(e -> {
+                    if (date == null) return true;
+                    var fecha = e.getFechaCita();
+                    if (fecha == null) return false;
+                    return fecha.toLocalDate().equals(date); // asume que fechaCita es LocalDateTime
+                })
+                .filter(e -> {
+                    if (state == null) return true;
+                    try {
+                        return e.getEstadoCita().name().equalsIgnoreCase(state);
+                    } catch (Exception ex) {
+                        return false;
+                    }
+                })
+                .filter(e -> {
+                    var currentUser = userUtilsService.getCurrent();
+                    if (currentUser == null) return false;
+
+                    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+                    boolean isAdmin = auth != null && auth.getAuthorities().stream()
+                            .anyMatch(a -> "ADMIN".equals(a.getAuthority()) || "ROLE_ADMIN".equals(a.getAuthority()));
+                    if (isAdmin) return true;
+
+                    boolean isMedico = auth != null && auth.getAuthorities().stream()
+                            .anyMatch(a -> "MEDICO".equals(a.getAuthority()) || "ROLE_MEDICO".equals(a.getAuthority()));
+                    if (isMedico) return e.getMedico() != null && e.getMedico().getId().equals(currentUser.getId());
+
+                    boolean isCliente = auth != null && auth.getAuthorities().stream()
+                            .anyMatch(a -> "CLIENTE".equals(a.getAuthority()) || "ROLE_CLIENTE".equals(a.getAuthority()));
+                    if (isCliente) return e.getPaciente() != null && e.getPaciente().getId().equals(currentUser.getId());
+                    return false;
+                })
+                .map(citaMapper::toDto)
+                .collect(java.util.stream.Collectors.toList());
+
+        return new org.springframework.data.domain.PageImpl<>(filtered, pageable, filtered.size());
     }
 
     @Transactional
@@ -129,4 +166,10 @@ public class CitaService {
         this.citaRepository.save(cita);
         return citaMapper.toDto(cita);
     }
+
+   @Transactional
+    public CitaMedicaEntity existCita(Long id){
+        return this.citaRepository.findById(id).orElseThrow(()-> new  GeneralException("error","no existe una cita con este registro"));
+    }
+
 }

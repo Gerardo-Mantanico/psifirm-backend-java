@@ -11,10 +11,9 @@ public class HistorialPersonalEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // En el SQL original el campo es hc_ y no es FK; interpreto que debe referenciar a historia_clinica
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "hc_", nullable = false)
-    private HistoriaClinicaEntity historiaClinica;
+
+    @Column(name = "hc_id")
+    private Long hcId;
 
     @Column(name = "desarrollo_evolutivo", columnDefinition = "TEXT")
     private String desarrolloEvolutivo;
