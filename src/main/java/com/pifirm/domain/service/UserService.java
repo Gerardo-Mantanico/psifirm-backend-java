@@ -131,12 +131,7 @@ public class UserService {
         return userMapper.toDto(list);
     }
 
-    @Transactional
-    public PacienteResDto paciente(Long userId){
-        var user = this.getById(userId);
-        var infoPaciente = this.infoPacienteService.userId(userId);
-        return new PacienteResDto(user, infoPaciente);
-    }
+
 
     @Transactional
     public PsmCompletado psicologo(Long userId){

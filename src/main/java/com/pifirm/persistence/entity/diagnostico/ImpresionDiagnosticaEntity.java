@@ -16,19 +16,21 @@ public class ImpresionDiagnosticaEntity {
     @Column(name = "hc_id", nullable = false)
     private Long hcId;
 
-    @ManyToOne
-    @JoinColumn(name = "diagnostico_principal_cie_11", nullable = false)
-    private DiagnosticoCie11Entity diagnosticoPrincipalCie11;
+    //@ManyToOne
+   // @JoinColumn(name = "diagnostico_principal_cie_11", nullable = false)
+    @Column(name = "diagnostico_principal_cie_11", nullable = false)
+    private Long diagnosticoPrincipalCie11;
 
-    @ManyToOne
-    @JoinColumn(name = "diagnostico_principal_dsm_5", nullable = false)
-    private DiagnosticoDsm5Entity diagnosticoPrincipalDsm5;
+   // @ManyToOne
+    //@JoinColumn(name = "diagnostico_principal_dsm_5", nullable = false)
+    @Column(name = "diagnostico_principal_dsm_5", nullable = false)
+    private Long diagnosticoPrincipalDsm5;
 
     @Column(name = "factores_predisponentes", columnDefinition = "TEXT")
     private String factoresPredisponentes;
 
     @Column(name = "factores_precipiantes", columnDefinition = "TEXT")
-    private String factoresPrecipiantes;
+    private String factoresPrecipitantes;
 
     @Column(name = "factores_mantenedores", columnDefinition = "TEXT")
     private String factoresMantenedores;

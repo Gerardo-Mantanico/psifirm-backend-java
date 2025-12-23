@@ -4,6 +4,7 @@ package com.pifirm.persistence.entity.diagnostico;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -11,7 +12,8 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @Data
 @Entity
-@Table(name ="pruebas_aplicadas")
+@Table(name ="prueba_aplicadas")
+@NoArgsConstructor
 public class PruebasAplicadasEntity {
 
     @Id
@@ -21,9 +23,8 @@ public class PruebasAplicadasEntity {
     @Column(name = "hc_id", nullable = false)
     private Long hcId;
 
-    @ManyToOne
-    @JoinColumn(name = "prueba_id", nullable = false)
-    private TipoPruebasEntity prueba;
+    @Column(name = "prueba_id", nullable = false)
+    private Long prueba;
 
     @Column(name = "fecha_aplicacion")
     private LocalDate fechaAplicacion;

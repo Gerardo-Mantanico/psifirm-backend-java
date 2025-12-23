@@ -1,3 +1,4 @@
+// java
 package com.pifirm.persistence.entity.planintervencion;
 
 import jakarta.validation.constraints.Max;
@@ -8,8 +9,6 @@ import lombok.NoArgsConstructor;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -21,27 +20,29 @@ public class ConfiguracionTratamientoEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "objetivo_general", nullable = false)
-    private TipoObjetivoEntity objetivoGeneral;
-
     @Column(name = "hc_id", nullable = false)
     private Long hcId;
 
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "frecuencia_id", nullable = false)
-    private FrecuenciaEntity frecuencia;
+    @Column(name = "objetivo_cortoplazo", nullable = false)
+    private String objetivoCortoplazo;
+
+    @Column(name = "objetivo_medioplazo", nullable = false)
+    private String objetivoMedioplazo;
+
+    @Column(name = "objetivo_largoplazo", nullable = false)
+    private String objetivoLargoplazo;
+
+    @Column(name = "frecuencia_id", nullable = false)
+    private Long frecuenciaId;
 
     @Column(name = "sesiones_por_semana")
     @Min(1)
     @Max(3)
     private Integer sesionesPorSemana;
 
-    @Column(name = "duracion_estimada")
-    private Integer duracionEstimada;
+    @Column(name = "duracion_estimada", precision = 10, scale = 2)
+    private BigDecimal duracionEstimada;
 
     @Column(name = "costos_por_session", precision = 10, scale = 2)
     private BigDecimal costosPorSession;
-
 }
-

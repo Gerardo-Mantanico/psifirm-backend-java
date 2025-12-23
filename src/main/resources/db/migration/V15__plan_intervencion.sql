@@ -1,10 +1,4 @@
 
-CREATE TABLE tipo_objetivo (
-                               id SERIAL PRIMARY KEY,
-                               tipo_objetivo TEXT NOT NULL,
-                               tiempo VARCHAR UNIQUE NOT NULL
-);
-
 CREATE TABLE modalidad_intervencion (
                                         id SERIAL PRIMARY KEY,
                                         nombre VARCHAR NOT NULL UNIQUE
@@ -43,22 +37,26 @@ INSERT INTO frecuencia (descripcion) VALUES
 
 CREATE TABLE configuracion_tratamiento (
                                            id SERIAL PRIMARY KEY,
-                                           objetivo_general BIGINT NOT NULL REFERENCES tipo_objetivo(id) ON DELETE CASCADE,
+                                           objetivoCortoplazo TEXT NOT NULL ,
+                                           objetivoMedioplazo TEXT NOT NULL ,
+                                           objetivoLargoplazo TEXT NOT NULL ,
                                            hc_id BIGINT NOT NULL REFERENCES historia_clinica(id) ON DELETE CASCADE,
                                            frecuencia_id BIGINT NOT NULL REFERENCES frecuencia(id) ON DELETE CASCADE,
                                            sesiones_por_semana SMALLINT CHECK (sesiones_por_semana BETWEEN 1 AND 3),
-                                           duracion_estimada INT,
+                                           duracion_estimada DECIMAL(10,2),
                                            costos_por_session DECIMAL(10,2)
 );
 
 CREATE TABLE modalidad (
                            id SERIAL PRIMARY KEY,
                            configuracion_tratamiento BIGINT NOT NULL
-                               REFERENCES configuracion_tratamiento(id) ON DELETE CASCADE
+                               REFERENCES configuracion_tratamiento(id) ON DELETE CASCADE,
+                            modalidad_intervencion_id BIGINT NOT NULL
 );
 
 CREATE TABLE enfoque (
                          id SERIAL PRIMARY KEY,
                          configuracion_tratamiento BIGINT NOT NULL
-                             REFERENCES configuracion_tratamiento(id) ON DELETE CASCADE
+                             REFERENCES configuracion_tratamiento(id) ON DELETE CASCADE,
+                         enfoque_terapeutico_id BIGINT NOT NULL
 );

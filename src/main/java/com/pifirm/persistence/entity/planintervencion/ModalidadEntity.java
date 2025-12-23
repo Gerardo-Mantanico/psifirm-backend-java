@@ -15,8 +15,11 @@ public class ModalidadEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "configuracion_tratamiento", nullable = false)
-    private ConfiguracionTratamientoEntity configuracionTratamiento;
+   // @ManyToOne(optional = false)
+    @Column(name = "configuracion_tratamiento", nullable = false)
+    private Long configuracionTratamiento;
+
+    @Column(name = "modalidad_intervencion_id")
+    private Long modalidadIntervencionId;
 }
 

@@ -2,6 +2,7 @@ package com.pifirm.domain.service;
 
 import com.pifirm.domain.dto.cita.CitaDto;
 import com.pifirm.domain.dto.cita.CitaResDto;
+import com.pifirm.domain.dto.cita.CitaUpdateDto;
 import com.pifirm.domain.exception.GeneralException;
 import com.pifirm.domain.repository.CitamedicaRepository;
 import com.pifirm.domain.repository.HistorialClinicaRepository;
@@ -81,7 +82,7 @@ public class CitaService {
     }
 
     @Transactional
-    public CitaResDto update(Long id, CitaDto dto) {
+    public CitaResDto update(Long id, CitaUpdateDto dto) {
 
         CitaMedicaEntity entity = citaRepository.findById(id)
                 .orElseThrow(() -> new GeneralException("cita-not-found", "Cita no encontrada"));
@@ -95,6 +96,10 @@ public class CitaService {
         if (dto.servicioMedicoId() != null) {
             var servicio = servicioRepository.findById(dto.servicioMedicoId()).orElseThrow(() -> new GeneralException("servicio-not-found", "Servicio no encontrado"));
             entity.setServicioMedico(servicio);
+        }
+
+        if(dto.estado() != null ){
+            entity.setEstadoCita(dto.estado());
         }
 
         CitaMedicaEntity updated = citaRepository.save(entity);
@@ -125,14 +130,6 @@ public class CitaService {
                     return fecha.toLocalDate().equals(date); // asume que fechaCita es LocalDateTime
                 })
                 .filter(e -> {
-                    if (state == null) return true;
-                    try {
-                        return e.getEstadoCita().name().equalsIgnoreCase(state);
-                    } catch (Exception ex) {
-                        return false;
-                    }
-                })
-                .filter(e -> {
                     var currentUser = userUtilsService.getCurrent();
                     if (currentUser == null) return false;
 
@@ -143,7 +140,7 @@ public class CitaService {
                     if (isAdmin) return true;
 
                     boolean isMedico = auth != null && auth.getAuthorities().stream()
-                            .anyMatch(a -> "MEDICO".equals(a.getAuthority()) || "ROLE_MEDICO".equals(a.getAuthority()));
+                            .anyMatch(a -> "PSM".equals(a.getAuthority()) || "ROLE_MEDICO".equals(a.getAuthority()));
                     if (isMedico) return e.getMedico() != null && e.getMedico().getId().equals(currentUser.getId());
 
                     boolean isCliente = auth != null && auth.getAuthorities().stream()
@@ -170,6 +167,15 @@ public class CitaService {
    @Transactional
     public CitaMedicaEntity existCita(Long id){
         return this.citaRepository.findById(id).orElseThrow(()-> new  GeneralException("error","no existe una cita con este registro"));
+    }
+
+    @Transactional
+    public void addHcToCita(Long citaId, Long hcId){
+        CitaMedicaEntity cita = this.existCita(citaId);
+        HistoriaClinicaEntity hc = this.hcRepository.findById(hcId)
+                .orElseThrow(() -> new GeneralException("hc-not-found", "Historia Clinica no encontrada"));
+        cita.setHistoriaClinica(hc);
+        this.citaRepository.save(cita);
     }
 
 }

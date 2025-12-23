@@ -2,6 +2,7 @@ package com.pifirm.web.controller;
 
 import com.pifirm.domain.dto.cita.CitaDto;
 import com.pifirm.domain.dto.cita.CitaResDto;
+import com.pifirm.domain.dto.cita.CitaUpdateDto;
 import com.pifirm.domain.service.CitaService;
 import com.pifirm.web.response.PageResponse;
 import com.pifirm.web.response.GenericResponse;
@@ -28,7 +29,7 @@ public class CitaController {
         this.citaService = citaService;
     }
 
-    @GetMapping("/me")
+    @GetMapping("")
     public PageResponse<CitaResDto> all(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
@@ -58,8 +59,10 @@ public class CitaController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAuthority('ADMIN')")
-    public ResponseEntity<CitaResDto> update(@PathVariable Long id, @RequestBody @Valid CitaDto dto) {
+
+    @PreAuthorize("hasAnyAuthority('ADMIN','PSM')")
+
+    public ResponseEntity<CitaResDto> update(@PathVariable Long id, @RequestBody @Valid CitaUpdateDto dto) {
         CitaResDto updated = citaService.update(id, dto);
         return ResponseEntity.ok(updated);
     }

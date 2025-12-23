@@ -28,7 +28,7 @@ public class HistoriaClinicaEntity {
     private String code;
 
     @Column(name = "date")
-    private LocalDate date;
+    private LocalDate date = LocalDate.now();
 
     // En el SQL original no hay FK explícita a user, por simplicidad guardamos el id del psicólogo y su nombre
     @Column(name = "psicologo_id", nullable = false)

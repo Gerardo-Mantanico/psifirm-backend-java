@@ -12,7 +12,7 @@ public class HistorialPersonalEntity {
     private Long id;
 
 
-    @Column(name = "hc_id")
+    @Column(name = "hcId")
     private Long hcId;
 
     @Column(name = "desarrollo_evolutivo", columnDefinition = "TEXT")

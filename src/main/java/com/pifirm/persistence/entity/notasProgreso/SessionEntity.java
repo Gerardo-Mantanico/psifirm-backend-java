@@ -22,7 +22,7 @@ public class SessionEntity {
     @Column(name = "fecha")
     private LocalDateTime fecha;
 
-    @Column(name = "numero_sesiones", nullable = false)
+    @Column(name = "numero_sesiones", nullable = false, insertable = false)
     private Integer numeroSesiones;
 
     @Column(name = "asistencia", nullable = false)

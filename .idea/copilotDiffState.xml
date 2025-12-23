@@ -11,6 +11,14 @@
             </PendingDiffInfo>
           </value>
         </entry>
+        <entry key="$PROJECT_DIR$/src/main/resources/db/migration/V15__create_diagnostico_dsm5_cie11.sql">
+          <value>
+            <PendingDiffInfo>
+              <option name="filePath" value="$PROJECT_DIR$/src/main/resources/db/migration/V15__create_diagnostico_dsm5_cie11.sql" />
+              <option name="updatedContent" value="-- src/main/resources/db/migration/V15__create_diagnostico_dsm5_cie11.sql&#10;-- Crea las tablas diagnostico_dsm_5 y diagnostico_cie_11 si no existen&#10;&#10;CREATE TABLE IF NOT EXISTS diagnostico_dsm_5 (&#10;    id SERIAL PRIMARY KEY,&#10;    nombre VARCHAR(255) NOT NULL,&#10;    codigo VARCHAR(50) NOT NULL,&#10;    description TEXT&#10;);&#10;&#10;CREATE TABLE IF NOT EXISTS diagnostico_cie_11 (&#10;    id SERIAL PRIMARY KEY,&#10;    nombre VARCHAR(255) NOT NULL,&#10;    codigo VARCHAR(50) NOT NULL,&#10;    description TEXT&#10;);&#10;" />
+            </PendingDiffInfo>
+          </value>
+        </entry>
       </map>
     </option>
   </component>

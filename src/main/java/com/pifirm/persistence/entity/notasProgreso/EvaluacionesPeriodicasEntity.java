@@ -22,9 +22,8 @@ public class EvaluacionesPeriodicasEntity {
     @Column(name = "fecha_evalucacion")
     private LocalDate fechaEvalucacion;
 
-    @ManyToOne
-    @JoinColumn(name = "tipo_evaluacion", nullable = false)
-    private TipoEvaluacionEntity tipoEvaluacion;
+    @Column(name = "tipo_evaluacion", nullable = false)
+    private Long tipoEvaluacion;
 
     @Column(name = "progreso_observado", nullable = false, columnDefinition = "TEXT")
     private String progresoObservado;
