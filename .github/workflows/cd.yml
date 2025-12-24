@@ -63,6 +63,7 @@ jobs:
             sudo docker pull \
               $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPOSITORY:${{ github.sha }}
 
+          
             sudo docker run -d --name $CONTAINER_NAME \
               -p 8080:8080 \
               --restart always \
@@ -72,4 +73,8 @@ jobs:
               -e SPRING_DATASOURCE_PASSWORD=${{ secrets.SPRING_DATASOURCE_PASSWORD }} \
               -e S3_BUCKET_NAME=${{ secrets.BUCKET }} \
               -e AWS_REGION=${{ secrets.REGION }} \
+              -e ACCESS_KEY=${{ secrets.AWS_ACCESS_KEY_ID }} \
+              -e SECRET_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }} \
+              -e EMAIL_SENDER_APP=${{ secrets.EMAIL_SENDER_APP }} \
+              -e EMAIL_SENDER_PASSWORD=${{ secrets.EMAIL_SENDER_PASSWORD }} \
               $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPOSITORY:${{ github.sha }}
