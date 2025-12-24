@@ -22,8 +22,8 @@ jobs:
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-access-key-id: ${{ secrets.ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.SECRET_KEY }}
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Login to Amazon ECR
@@ -39,38 +39,38 @@ jobs:
           docker push \
             $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPOSITORY:$IMAGE_TAG
 
-  deploy-to-instance-1:
+  deploy-to-ec2:
     runs-on: ubuntu-latest
     needs: build-and-push-image
 
     steps:
-      - name: Deploy to EC2 Instance 1
+      - name: Deploy to EC2
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ec2-user
           key: ${{ secrets.EC2_SSH_KEY }}
+          envs: AWS_REGION,AWS_ACCOUNT_ID,ECR_REPOSITORY,CONTAINER_NAME
           script: |
-            sudo yum install docker -y
+            sudo yum install -y awscli
             sudo service docker start
-            sudo usermod -a -G docker ec2-user
 
-            aws ecr get-login-password --region us-east-2 | sudo docker login --username AWS --password-stdin \
-            857305036021.dkr.ecr.us-east-2.amazonaws.com
+            aws ecr get-login-password --region $AWS_REGION | sudo docker login --username AWS --password-stdin \
+            $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com
 
-            sudo docker stop backend-java || true
-            sudo docker rm backend-java || true
+            sudo docker stop $CONTAINER_NAME || true
+            sudo docker rm $CONTAINER_NAME || true
 
-            sudo docker pull 857305036021.dkr.ecr.us-east-2.amazonaws.com/backend-java:${{ github.sha }}
+            sudo docker pull \
+              $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPOSITORY:${{ github.sha }}
 
-            sudo docker run -d --name backend-java \
+            sudo docker run -d --name $CONTAINER_NAME \
               -p 8080:8080 \
               --restart always \
               -e SPRING_PROFILES_ACTIVE=prod \
-              -e PROD_DB_HOST=${{ secrets.PROD_DB_HOST }} \
-              -e PROD_DB_NAME=${{ secrets.PROD_DB_NAME }} \
-              -e PROD_DB_USERNAME=${{ secrets.PROD_DB_USERNAME }} \
-              -e PROD_DB_PASSWORD=${{ secrets.PROD_DB_PASSWORD }} \
-              -e S3_BUCKET_NAME=${{ secrets.S3_BUCKET_NAME }} \
-              -e S3_BUCKET_REGION=${{ secrets.S3_BUCKET_REGION }} \
-              857305036021.dkr.ecr.us-east-2.amazonaws.com/backend-java:${{ github.sha }}
+              -e SPRING_DATASOURCE_URL=${{ secrets.SPRING_DATASOURCE_URL }} \
+              -e SPRING_DATASOURCE_USERNAME=${{ secrets.SPRING_DATASOURCE_USERNAME }} \
+              -e SPRING_DATASOURCE_PASSWORD=${{ secrets.SPRING_DATASOURCE_PASSWORD }} \
+              -e S3_BUCKET_NAME=${{ secrets.BUCKET }} \
+              -e AWS_REGION=${{ secrets.REGION }} \
+              $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPOSITORY:${{ github.sha }}
