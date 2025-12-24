@@ -24,7 +24,8 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.REGION }}
+          aws-region: ${{ env.AWS_REGION }}
+
       - name: Login to Amazon ECR
         uses: aws-actions/amazon-ecr-login@v2
 
@@ -49,32 +50,39 @@ jobs:
           host: ${{ secrets.EC2_HOST }}
           username: ec2-user
           key: ${{ secrets.EC2_SSH_KEY }}
+          # Pasamos las variables de entorno necesarias al contexto de SSH
           envs: AWS_REGION,AWS_ACCOUNT_ID,ECR_REPOSITORY,CONTAINER_NAME
           script: |
+            # 1. Asegurar dependencias
             sudo yum install -y awscli
-            sudo service docker start
+            sudo service docker start || sudo systemctl start docker
 
-            aws ecr get-login-password --region $AWS_REGION | sudo docker login --username AWS --password-stdin \
-            $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com
+            # 2. Login en ECR
+            aws ecr get-login-password --region $AWS_REGION | sudo docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com
 
+            # 3. Limpieza de contenedores previos
             sudo docker stop $CONTAINER_NAME || true
             sudo docker rm $CONTAINER_NAME || true
+            
+            # 4. Pull de la nueva imagen
+            IMAGE_URI=$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPOSITORY:${{ github.sha }}
+            sudo docker pull $IMAGE_URI
 
-            sudo docker pull \
-              $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPOSITORY:${{ github.sha }}
-
-          
+            # 5. Ejecución del contenedor (Se usa "" en los secrets para evitar errores de Bash)
             sudo docker run -d --name $CONTAINER_NAME \
               -p 8080:8080 \
               --restart always \
               -e SPRING_PROFILES_ACTIVE=prod \
-              -e SPRING_DATASOURCE_URL=${{ secrets.SPRING_DATASOURCE_URL }} \
-              -e SPRING_DATASOURCE_USERNAME=${{ secrets.SPRING_DATASOURCE_USERNAME }} \
-              -e SPRING_DATASOURCE_PASSWORD=${{ secrets.SPRING_DATASOURCE_PASSWORD }} \
-              -e S3_BUCKET_NAME=${{ secrets.BUCKET }} \
-              -e AWS_REGION=${{ secrets.REGION }} \
-              -e ACCESS_KEY=${{ secrets.AWS_ACCESS_KEY_ID }} \
-              -e SECRET_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }} \
-              -e EMAIL_SENDER_APP=${{ secrets.EMAIL_SENDER_APP }} \
-              -e EMAIL_SENDER_PASSWORD=${{ secrets.EMAIL_SENDER_PASSWORD }} \
-              $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPOSITORY:${{ github.sha }}
+              -e SPRING_DATASOURCE_URL="${{ secrets.SPRING_DATASOURCE_URL }}" \
+              -e SPRING_DATASOURCE_USERNAME="${{ secrets.SPRING_DATASOURCE_USERNAME }}" \
+              -e SPRING_DATASOURCE_PASSWORD="${{ secrets.SPRING_DATASOURCE_PASSWORD }}" \
+              -e S3_BUCKET_NAME="${{ secrets.BUCKET }}" \
+              -e AWS_REGION="${{ secrets.REGION }}" \
+              -e ACCESS_KEY="${{ secrets.AWS_ACCESS_KEY_ID }}" \
+              -e SECRET_KEY="${{ secrets.AWS_SECRET_ACCESS_KEY }}" \
+              -e EMAIL_SENDER_APP="${{ secrets.EMAIL_SENDER_APP }}" \
+              -e EMAIL_SENDER_PASSWORD="${{ secrets.EMAIL_SENDER_PASSWORD }}" \
+              $IMAGE_URI
+
+            # 6. Limpieza de imágenes huérfanas (opcional, para ahorrar espacio en EC2)
+            sudo docker image prune -f
