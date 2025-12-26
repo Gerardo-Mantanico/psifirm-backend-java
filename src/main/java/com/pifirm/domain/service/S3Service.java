@@ -19,6 +19,7 @@ import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 
 @Service
@@ -143,4 +144,80 @@ public class  S3Service {
             throw new RuntimeException("Error técnico al subir el archivo", e);
         }
     }
+
+public String uploadBase64(String dataUrl) {
+    if (dataUrl == null || !dataUrl.startsWith("data:")) {
+        throw new GeneralException("invalid-data-url", "Formato data URL inválido");
+    }
+    try {
+        String[] parts = dataUrl.split(",", 2);
+        if (parts.length != 2) {
+            throw new GeneralException("invalid-data-url", "Formato data URL inválido");
+        }
+
+        String metadata = parts[0]; // ej. data:application/pdf;base64
+        String base64Data = parts[1];
+
+        // Extraer el content type
+        String contentType = "application/octet-stream";
+        if (metadata.length() > 5) {
+            int semi = metadata.indexOf(';', 5);
+            if (semi > 5) {
+                contentType = metadata.substring(5, semi);
+            } else {
+                contentType = metadata.substring(5);
+            }
+        }
+
+        // Decodificar base64
+        final byte[] fileBytes;
+        try {
+            fileBytes = Base64.getDecoder().decode(base64Data);
+        } catch (IllegalArgumentException e) {
+            throw new GeneralException("invalid-base64", "Datos base64 inválidos");
+        }
+
+        // Determinar extensión simple a partir del mime (maneja tipos como svg+xml -> svg)
+        String ext = ".bin";
+        int slash = contentType.indexOf('/');
+        if (slash >= 0 && slash < contentType.length() - 1) {
+            ext = "." + contentType.substring(slash + 1)
+                    .replaceAll("\\+.*", "")          // quitar +xml, +zip, etc.
+                    .replaceAll("[^a-zA-Z0-9]", ""); // limpiar caracteres raros
+            if (ext.length() == 1) ext = ".bin";
+        }
+
+        // Elegir prefijo automáticamente según el tipo (image, pdf, text, application -> application -> file)
+        String prefix;
+        if (contentType.startsWith("image/")) {
+            prefix = "image";
+        } else if ("application/pdf".equals(contentType)) {
+            prefix = "pdf";
+        } else {
+            String top = contentType.contains("/") ? contentType.substring(0, contentType.indexOf('/')) : contentType;
+            prefix = (top == null || top.isBlank()) ? "file" : top.replaceAll("[^a-zA-Z0-9]", "-").toLowerCase();
+        }
+        if (prefix.isBlank()) prefix = "file";
+
+        // Generar nombre de archivo usando el helper existente
+        String fileName = generateFileName(prefix, 0, "file" + ext);
+
+        // Preparar y subir a S3
+        PutObjectRequest putObjectRequest = PutObjectRequest.builder()
+                .bucket(bucketName)
+                .key(fileName)
+                .contentType(contentType)
+                .contentLength((long) fileBytes.length)
+                .build();
+
+        s3Client.putObject(putObjectRequest, RequestBody.fromBytes(fileBytes));
+
+        return s3Client.utilities().getUrl(builder -> builder.bucket(bucketName).key(fileName)).toString();
+
+    } catch (GeneralException e) {
+        throw e;
+    } catch (Exception e) {
+        throw new RuntimeException("Error técnico al subir archivo base64", e);
+    }
+}
 }

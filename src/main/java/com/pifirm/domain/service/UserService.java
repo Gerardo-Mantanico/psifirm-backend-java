@@ -30,6 +30,7 @@ public class UserService {
     private final UserMapper userMapper;
     private final InfoPacienteService infoPacienteService;
     private final PsmServicie psmService;
+    private final EmailService emailService;
 
 
     @Transactional
@@ -48,6 +49,15 @@ public class UserService {
         userEntity.setUserRole(userRoleEntity);
         userEntity = userRepository.save(userEntity);
         userRoleEntity.setUser(userEntity);
+
+        emailService.sendEmailAsync(userCreationDto.getEmail(),
+                "Bienvenido a PIFirm",
+                "Hola " + userEntity.getFirstname() + ",\n\n" +
+                        "Gracias por registrarte en PIFirm. Estamos encantados de tenerte con nosotros.\n\n" +
+                        "Saludos cordiales,\n" +
+                        "El equipo de PIFirm");
+
+
         return this.userMapper.toDto(userEntity);
     }
 

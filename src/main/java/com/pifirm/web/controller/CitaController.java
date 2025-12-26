@@ -74,12 +74,11 @@ public class CitaController {
         return ResponseEntity.ok(new GenericResponse(HttpStatus.OK.value(), "Eliminado correctamente"));
     }
 
-//    @PutMapping("/{id}")
-//   // @PreAuthorize("hasAuthority('ADMIN')")
-//    public ResponseEntity<CitaResDto> asignarPsicologo(@PathVariable Long id, @RequestBody @Valid CitaDto dto) {
-//        CitaResDto updated = citaService.asignarPsicologo(id, id);
-//        return ResponseEntity.ok(updated);
-//    }
+  @PutMapping("/estado/{id}")
+    public ResponseEntity<?> updateCitaState(@RequestParam Long id, @RequestParam CitaUpdateDto state) {
+        citaService.updataCita(id, state.estado());
+        return ResponseEntity.ok(new GenericResponse(HttpStatus.OK.value(), "Estado de la cita actualizado correctamente"));
+    }
 
 }
 

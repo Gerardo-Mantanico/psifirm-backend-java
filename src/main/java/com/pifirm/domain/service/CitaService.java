@@ -3,11 +3,13 @@ package com.pifirm.domain.service;
 import com.pifirm.domain.dto.cita.CitaDto;
 import com.pifirm.domain.dto.cita.CitaResDto;
 import com.pifirm.domain.dto.cita.CitaUpdateDto;
+import com.pifirm.domain.enums.EstadoCita;
 import com.pifirm.domain.exception.GeneralException;
 import com.pifirm.domain.repository.CitamedicaRepository;
 import com.pifirm.domain.repository.HistorialClinicaRepository;
 import com.pifirm.domain.repository.ServicioRepository;
 import com.pifirm.domain.repository.UserRepository;
+import com.pifirm.domain.repository.cita.InformacionLaboralEmpleadoRepository;
 import com.pifirm.persistence.entity.*;
 import com.pifirm.persistence.mapper.CitaMapper;
 import jakarta.transaction.Transactional;
@@ -19,6 +21,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Service
 @AllArgsConstructor
@@ -30,6 +33,7 @@ public class CitaService {
     private final ServicioRepository servicioRepository;
     private final UserUtilsService userUtilsService;
     private final EmailService emailService;
+    private final InformacionLaboralEmpleadoRepository informacionLaboralEmpleadoRepository;
 
 
     @Transactional
@@ -42,9 +46,14 @@ public class CitaService {
         ServicioEntity servicio = servicioRepository.findById(dto.servicioMedicoId())
                 .orElseThrow(() -> new GeneralException("servicio-not-found", "Servicio no encontrado"));
         entity.setPaciente(paciente);
-        UserEntity medico = null;
+
+
+        //buscar psicologo disponible
+        UserEntity medico = new UserEntity();
+        medico.setId(this.buscarPsicologo(dto.servicioMedicoId(), dto.fechaCita()));
         entity.setMedico(medico);
         entity.setServicioMedico(servicio);
+        entity.setId(null);
 
         CitaMedicaEntity saved = citaRepository.save(entity);
 
@@ -176,6 +185,25 @@ public class CitaService {
                 .orElseThrow(() -> new GeneralException("hc-not-found", "Historia Clinica no encontrada"));
         cita.setHistoriaClinica(hc);
         this.citaRepository.save(cita);
+    }
+
+
+public Long buscarPsicologo(Long service, LocalDateTime date) {
+    for (Long userId : this.informacionLaboralEmpleadoRepository.findUserIdsByServicioId(service)) {
+        boolean ocupado = this.citaRepository.existsByMedicoIdAndFechaCita(userId, date);
+        if (!ocupado) {
+            return userId;
+        }
+    }
+    throw new GeneralException("no-psicologo-available", "No hay psicologos disponibles en esa fecha/hora");
+}
+
+public CitaMedicaEntity  updataCita(Long id, EstadoCita estado){
+    CitaMedicaEntity cita = this.citaRepository.findByHistoriaClinica_Id(id);
+    cita.setEstadoCita(estado);
+    this.emailService.sendEmailAsync("Cita actualizada", "Su cita ha sido actualizada al estado: " + estado.name(), cita.getPaciente().getEmail());
+    this.emailService.sendEmailAsync("Cita actualizada", "La cita del paciente " + cita.getPaciente().getFirstname() + " " + cita.getPaciente().getLastname() + " ha sido actualizada al estado: " + estado.name(), cita.getMedico().getEmail());
+        return    this.citaRepository.save(cita);
     }
 
 }

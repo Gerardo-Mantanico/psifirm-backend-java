@@ -161,4 +161,10 @@ public class NominaService {
         return nominaRepository.findById(id)
                 .orElseThrow(() -> new GeneralException("error", "Nómina no encontrada."));
     }
+
+    @Transactional
+    public void  pagarnomina(String data){
+        var nomina =  this.nominaRepository.findByUser_Email(data).orElseThrow(()-> new GeneralException("error","no existe una nomina asociada con este correo"));
+
+    }
 }
